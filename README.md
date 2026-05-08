@@ -4,7 +4,6 @@
 
 [![Status](https://img.shields.io/badge/Status-Seed_v0.1.0-orange.svg)](CHANGELOG.md)
 
-
 Cisco's Advanced Security Initiatives Group has built and operated an agentic security evaluation internally across several iterations and deployment models, and along the way accumulated a long list of design decisions that turned out to matter and a longer list that turned out not to.
 
 **Foundry distills that experience into a single, organization-neutral specification.** It is the design that, across those iterations, consistently proved most effective. It is not our code. It is the shape of a system that works, with every lesson we learned written down as a requirement and every place where the right answer depends on *your* infrastructure left as an explicit open question.
@@ -201,5 +200,10 @@ To report a security issue with this repository or with a Foundry-derived system
 ## Provenance
 
 Foundry is released by Cisco Systems, Inc. It distills the design of internal security-evaluation systems built and operated by Cisco's Advanced Security Initiatives Group. The specification is organization-neutral by design; Cisco's specific infrastructure choices appear only as worked examples in clarification questions, never as requirements.
+
+## Acknowledgements
+Original authors of the spec and constitution:
+- Theo Morales (@kh0rvus)
+- John Allbritten (@jallbrit) 
 
 
