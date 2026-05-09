@@ -197,5 +197,5 @@ Forbidden:
 - [`observability-checklist.md`](observability-checklist.md) — surfacing yield, coverage, and budget on the dashboard.
 - [`sandbox-patterns.md`](sandbox-patterns.md) — sandbox patterns; budget and sandbox are independent concerns.
 - [`../architecture/role-interactions.md#3-coverage-guide-feedback-loop`](../architecture/role-interactions.md#3-coverage-guide-feedback-loop) — the Coverage-Guide flow.
-- [`../principles/rationale-deep-dives.md#vi-coverage-before-yield`](../principles/rationale-deep-dives.md#vi-coverage-before-yield) — why the conjunction is required.
+- [`../principles/anti-patterns.md#vi-coverage-before-yield`](../principles/anti-patterns.md#vi-coverage-before-yield) — failure modes when the conjunction is dropped.
 - [`../../spec.md#94-yield-auto-stop`](../../spec.md#94-yield-auto-stop) — canonical requirements.

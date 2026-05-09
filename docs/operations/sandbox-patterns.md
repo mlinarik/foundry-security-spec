@@ -187,5 +187,5 @@ Prompt-level hard rules are kept *as defense in depth*, not as the boundary. The
 
 - [`observability-checklist.md`](observability-checklist.md) — health checks for the sandbox (FR-125).
 - [`../architecture/substrate-contracts.md`](../architecture/substrate-contracts.md) — the substrate contract that the sandboxed agents satisfy.
-- [`../principles/rationale-deep-dives.md#ix-sandbox-by-infrastructure-not-by-prompt`](../principles/rationale-deep-dives.md#ix-sandbox-by-infrastructure-not-by-prompt) — what motivated the principle.
+- [`../principles/anti-patterns.md#ix-sandbox-by-infrastructure-not-by-prompt`](../principles/anti-patterns.md#ix-sandbox-by-infrastructure-not-by-prompt) — failure modes the principle prevents.
 - [`../../spec.md#91-sandbox`](../../spec.md#91-sandbox) — canonical requirements.
