@@ -22,7 +22,7 @@ docs/
 ├── faq.md                    ← curated adoption questions
 ├── adoption/                 ← how to take the seed into a real org
 ├── architecture/             ← cross-role views, diagrams, flows
-├── principles/               ← deep dives on the 11 principles
+├── principles/               ← anti-patterns and field guide for the 11 principles
 ├── worked-examples/          ← concrete case studies (clarification, rule, evidence)
 ├── reference/                ← lookup tables (FR index, principle×FR matrix)
 ├── governance/               ← procedural how-to for amendments and versioning
@@ -56,9 +56,8 @@ docs/
 
 **You are reviewing a `plan.md` or `tasks.md` PR and need to defend a principle.**
 
-1. [`principles/rationale-deep-dives.md`](principles/rationale-deep-dives.md)
-2. [`principles/anti-patterns.md`](principles/anti-patterns.md)
-3. [`reference/principle-fr-matrix.md`](reference/principle-fr-matrix.md)
+1. [`principles/anti-patterns.md`](principles/anti-patterns.md)
+2. [`reference/principle-fr-matrix.md`](reference/principle-fr-matrix.md)
 
 **You are a maintainer proposing a change to `spec.md` or `constitution.md`.**
 
