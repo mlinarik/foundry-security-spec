@@ -151,5 +151,5 @@ Deduplication, cross-run inheritance, and "update issue, do not recreate" all ke
 ## See also
 
 - [`role-interactions.md`](role-interactions.md) — sequence diagrams that traverse this state machine.
-- [`../principles/rationale-deep-dives.md`](../principles/rationale-deep-dives.md) — long-form on Principles I, II, VII, VIII.
+- [`../principles/anti-patterns.md`](../principles/anti-patterns.md) — failure modes for Principles I, II, VII, VIII.
 - [`../worked-examples/example-evidence-gate.md`](../worked-examples/example-evidence-gate.md) — three findings walked through the gate.
