@@ -94,7 +94,9 @@ See [`docs/adoption/integration-decisions.md` §11.2](adoption/integration-decis
 
 Yes. The trade-off is explicit in [`spec.md` §11.12](../spec.md#1112-testbed) and [Principle VII](../constitution.md#vii-exploited-means-demonstrated): without a testbed, the Validator cannot independently reproduce findings, so `exploited` cannot be set.
 
-You will still produce confirmed `true-positive` findings (with evidence-gate citations), but no `exploited=true` findings. Document the limitation in your spec.
+- **IMPORTANT**: Without a testbed, findings will be much lower confidence. The amount of `false-positives` could be high. 
+
+You will still produce confirmed `true-positive` findings (with evidence-gate citations), but no `exploited=true` findings. Document the limitation in your spec. Basic static analysis can't distinguish exploitable paths from theoretically-vulnerable-but-unreachable ones, and there's no PoC to prove the issue is real. For Generative AI this hits harder since model behavior is stochastic and only verifiable empirically.
 
 ## The seed says "exploited" is the strongest signal — but my reviewers don't filter on it. What now?
 
