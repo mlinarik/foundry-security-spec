@@ -24,7 +24,7 @@ Each principle exists because the seed authors shipped a system without it and b
 
 You may, of course, decline to adopt the seed at all. But if you adopt the seed, the constitution comes with it.
 
-See [`docs/principles/rationale-deep-dives.md`](principles/rationale-deep-dives.md) for the operating story behind each principle.
+See [`docs/principles/anti-patterns.md`](principles/anti-patterns.md) for the failure modes each principle exists to prevent.
 
 ## Do I need CodeGuard specifically?
 
