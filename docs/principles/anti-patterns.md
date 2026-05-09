@@ -18,8 +18,6 @@ If a pattern below appears in a proposal, it does **not** automatically mean the
 | **Trust-boundary citations satisfied by prose.** "The user input enters at the API boundary" without a code citation. | Prose cannot be verified. A path-and-symbol citation can. |
 | **Carving out vulnerability classes from the gate.** "We don't require evidence for [class] because they're obvious." | Carve-outs accumulate. The narrow [FR-087a](../../spec.md#73-evidence-gate) carve-out is the only acceptable form, and it is enumerated. |
 
-**See:** [Principle I rationale](rationale-deep-dives.md#i-evidence-over-assertion).
-
 ---
 
 ## II. Surface Only What Survives
@@ -32,8 +30,6 @@ If a pattern below appears in a proposal, it does **not** automatically mean the
 | **Direct issue-tracker writes from the Detector.** | Forbidden by [FR-044](../../spec.md#54-detector); the Detector writes only to the internal store. |
 | **Discarding rejected findings.** "If it's a false-positive, why keep it?" | Rejected findings are evidence that "we already looked at this." Discarding them re-runs the same triage on every re-evaluation. |
 
-**See:** [Principle II rationale](rationale-deep-dives.md#ii-surface-only-what-survives).
-
 ---
 
 ## III. Liveness By Heartbeat, Never By Clock
@@ -44,8 +40,6 @@ If a pattern below appears in a proposal, it does **not** automatically mean the
 | **Heartbeat on the same event loop as primary work.** | A CPU-bound moment makes a healthy agent miss beats; the substrate kills it. |
 | **Heartbeat that requires the agent to call back into its own state.** | If the agent's main lock is held, the heartbeat fails. The lane must be independent. |
 | **Conflating session rotation with liveness.** Treating the session-rotation hard limit ([FR-118](../../spec.md#95-agent-lifecycle-limits)) as a liveness signal. | Session rotation is a deliberate cost-control rotation of a heartbeating agent's session; it must not reclaim claims. |
-
-**See:** [Principle III rationale](rationale-deep-dives.md#iii-liveness-by-heartbeat-never-by-clock).
 
 ---
 
@@ -59,8 +53,6 @@ If a pattern below appears in a proposal, it does **not** automatically mean the
 | **Process-supervisor-only release** (no substrate-level mortality). | The process supervisor can itself wedge. Substrate-level liveness-tied release is required. |
 | **Releasing a claim by deleting its record without a transaction.** | Concurrent claim attempts can race the delete; classic TOCTOU. |
 
-**See:** [Principle IV rationale](rationale-deep-dives.md#iv-claims-are-atomic-and-mortal).
-
 ---
 
 ## V. The Provider Is The Rate Arbiter
@@ -73,8 +65,6 @@ If a pattern below appears in a proposal, it does **not** automatically mean the
 | **Throttling based on a derived metric** (CPU, memory, queue depth). | These do not measure provider capacity; they measure local symptoms. |
 | **Suppressing 429s** ("retry silently and never log"). | Hides the signal Principle V is built around. The 429 *is* the information. |
 
-**See:** [Principle V rationale](rationale-deep-dives.md#v-the-provider-is-the-rate-arbiter).
-
 ---
 
 ## VI. Coverage Before Yield
@@ -86,8 +76,6 @@ If a pattern below appears in a proposal, it does **not** automatically mean the
 | **Treating model-emitted "I'm done" as the done signal.** | The model is not authoritative on coverage. The Coverage-Guide is. |
 | **Counting coverage by "agents have run" rather than "checklist items attempted."** | Every agent could be running and the checklist could be untouched. |
 | **Marking coverage complete to satisfy yield-stop.** | Defeats the conjunction. The coverage flag must reflect substrate state, not be set as a workaround. |
-
-**See:** [Principle VI rationale](rationale-deep-dives.md#vi-coverage-before-yield).
 
 ---
 
@@ -102,8 +90,6 @@ If a pattern below appears in a proposal, it does **not** automatically mean the
 | **`exploited` inferred from evidence quality.** | Inference is not demonstration; the flag has a one-sentence definition for a reason. |
 | **Removing the testbed and "still setting `exploited` based on judgment".** | Without a testbed, the flag cannot be set, period. Document the limitation in your spec. |
 
-**See:** [Principle VII rationale](rationale-deep-dives.md#vii-exploited-means-demonstrated).
-
 ---
 
 ## VIII. Fingerprints Are Stable Under Edit
@@ -115,8 +101,6 @@ If a pattern below appears in a proposal, it does **not** automatically mean the
 | **Including the detection timestamp in the fingerprint.** | Guarantees non-stability. |
 | **Fingerprinting by issue-tracker ID.** | The fingerprint is upstream of the issue tracker; the tracker keys *on* the fingerprint. |
 | **Generating a new fingerprint on re-triage.** | Re-triage replaces the verdict, not the identity. |
-
-**See:** [Principle VIII rationale](rationale-deep-dives.md#viii-fingerprints-are-stable-under-edit).
 
 ---
 
@@ -130,8 +114,6 @@ If a pattern below appears in a proposal, it does **not** automatically mean the
 | **Allowlisting "dev/test domains" without scrutiny.** | An allowlisted host can become a pivot to anything that host can reach. |
 | **Read-write mounts of target source.** | A prompt-injected agent can corrupt the target. The mount must be read-only. |
 
-**See:** [Principle IX rationale](rationale-deep-dives.md#ix-sandbox-by-infrastructure-not-by-prompt).
-
 ---
 
 ## X. The Operator Outranks Every Agent
@@ -144,8 +126,6 @@ If a pattern below appears in a proposal, it does **not** automatically mean the
 | **Auto-merging Self-Improver-proposed rules.** | Removes the operator's authority over the rule corpus. |
 | **Auto-applying Remediator-proposed patches.** | Same problem; operator authority is over merge, not over draft. |
 
-**See:** [Principle X rationale](rationale-deep-dives.md#x-the-operator-outranks-every-agent).
-
 ---
 
 ## XI. Persist Atomically
@@ -157,8 +137,6 @@ If a pattern below appears in a proposal, it does **not** automatically mean the
 | **Multi-key updates without a transaction.** | A crash mid-update leaves an inconsistent record set. |
 | **"We rarely crash; we'll skip the atomic step."** | The seed authors lost multi-hour index builds to deploy-time terminations. Rarely is enough. |
 | **Atomic for some artifacts but not others.** | Failure happens on whichever artifact you skipped. The rule is general for a reason. |
-
-**See:** [Principle XI rationale](rationale-deep-dives.md#xi-persist-atomically).
 
 ---
 
@@ -175,6 +153,5 @@ The constitution does not require you to be creative. It gives you the conclusio
 ## See also
 
 - [`../../constitution.md`](../../constitution.md) — the canonical principles.
-- [`rationale-deep-dives.md`](rationale-deep-dives.md) — the operating story behind each principle.
 - [`../reference/principle-fr-matrix.md`](../reference/principle-fr-matrix.md) — which FRs enforce which principle.
 - [`../governance/amendment-process.md`](../governance/amendment-process.md) — how to propose changing a principle if you genuinely have a case.
