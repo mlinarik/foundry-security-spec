@@ -174,4 +174,4 @@ If your proposal matches any of these, write the failure-case-grounding section 
 - [`sync-impact-reports.md`](sync-impact-reports.md) — the Sync Impact Report format.
 - [`../../constitution.md`](../../constitution.md) — the canonical principles and Governance section.
 - [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md) — general contribution rules.
-- [`../principles/rationale-deep-dives.md`](../principles/rationale-deep-dives.md) — long-form on each principle, useful when defending the status quo against amendment proposals.
+- [`../principles/anti-patterns.md`](../principles/anti-patterns.md) — failure modes for each principle, useful when defending the status quo against amendment proposals.
