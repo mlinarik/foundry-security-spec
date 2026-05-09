@@ -111,7 +111,7 @@ After milestones, run `/speckit.analyze` to detect drift between spec, plan, tas
 
 - Clarify will surface decisions you have not formally made. That is its job.
 - Specify will at least once expand a section in a way that requires another clarify pass. Expect this.
-- The constitution will block at least one early plan choice. The blocker is doing its job. Read [`../principles/rationale-deep-dives.md`](../principles/rationale-deep-dives.md) before debating it.
+- The constitution will block at least one early plan choice. The blocker is doing its job. Read [`../principles/anti-patterns.md`](../principles/anti-patterns.md) before debating it.
 
 ## What to expect on day fourteen
 
