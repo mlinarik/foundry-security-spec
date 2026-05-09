@@ -96,4 +96,4 @@ Record the result in this file and reference it in the Sync Impact Report at the
 - [`fr-index.md`](fr-index.md) — one-line summaries of every FR.
 - [`../../constitution.md`](../../constitution.md) — the principles themselves.
 - [`../governance/amendment-process.md`](../governance/amendment-process.md) — the amendment procedure when a principle no longer fits.
-- [`../principles/rationale-deep-dives.md`](../principles/rationale-deep-dives.md) — long-form per principle.
+- [`../principles/anti-patterns.md`](../principles/anti-patterns.md) — failure modes per principle.
