@@ -162,6 +162,6 @@ In Finding A, the Validator may set `exploited` after independent testbed reprod
 ## See also
 
 - [`../architecture/finding-lifecycle.md`](../architecture/finding-lifecycle.md) — the state machine these findings traverse.
-- [`../principles/rationale-deep-dives.md#i-evidence-over-assertion`](../principles/rationale-deep-dives.md#i-evidence-over-assertion) — why the gate is structured this way.
+- [`../principles/anti-patterns.md#i-evidence-over-assertion`](../principles/anti-patterns.md#i-evidence-over-assertion) — failure modes the gate is structured to prevent.
 - [`example-detection-rule.md`](example-detection-rule.md) — a CodeGuard rule that might fire on Finding A.
 - [`example-clarification.md`](example-clarification.md) — Acme Bank's clarification choices that determine `needs-review` surfacing.
