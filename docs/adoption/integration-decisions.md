@@ -15,7 +15,7 @@ For each surface below:
 
 ## §11.1 Version control & issue tracker
 
-Constraint: the Reporter (FR-072 — FR-080) writes to whatever issue tracker you pick. Cross-run inheritance keys on fingerprint (FR-090, Principle VIII).
+Constraint: the Reporter (FR-075 — FR-084) writes to whatever issue tracker you pick. Cross-run inheritance keys on fingerprint (FR-090, Principle VIII).
 
 | Decision criterion | Favors… | Avoid… |
 |---|---|---|
@@ -39,7 +39,7 @@ Required capabilities the spec assumes:
 
 - The provider's responses include rate-limit headers or equivalent backoff signals.
 - Calls support timeouts at the call layer (separately from agent liveness).
-- Token cost is observable for budget enforcement (FR-093 — FR-095).
+- Token usage / cost is observable for budget enforcement (FR-112, FR-113).
 
 ## §11.3 Datastore
 
@@ -88,7 +88,7 @@ Not acceptable as the sole boundary: prompt-level rules, agent self-restriction,
 
 ## §11.7 Authentication model
 
-Constraint: every credential the agent needs must come from the runtime, not the prompt or codebase. See [`codeguard-1-hardcoded-credentials`](../../AGENTS.md).
+Constraint: every credential the agent needs must come from the runtime, not the prompt or codebase ([Project CodeGuard](https://github.com/cosai-oasis/project-codeguard) rule `codeguard-1-hardcoded-credentials`; CWE-798; see the FR-087a presence-is-the-vulnerability carve-out).
 
 | Pattern | Notes |
 |---|---|
@@ -144,10 +144,10 @@ Constraint: Principle VII — `exploited` is set only by clean-room reproduction
 | Posture | Implication |
 |---|---|
 | **Live testbed available** | Validator can confirm impact; `exploited` flag is meaningful. |
-| **No testbed** | Validator falls back to evidence-only verdicts. `exploited` cannot be set. Document the limitation in your spec. |
+| **No testbed** | Validator produces the PoC artifact without running it and records "no testbed" (FR-066). `exploited` cannot be set. Document the limitation in your spec. |
 | **"We sometimes run against prod"** | Not a testbed. Forbidden by Principle IX practical reading and by basic operational safety. |
 
-The testbed must be reachable only from the Validator's egress allowlist. The Detector and other roles MUST NOT touch the testbed.
+Testbed reachability is governed by the per-role egress allowlist (FR-107). The Validator requires it; the Detector's exploratory mode may use it where configured (FR-040), and the Triager may need access to satisfy FR-056 where configured. Only the Validator may set `exploited` (FR-089).
 
 ## Putting it together
 

@@ -46,7 +46,7 @@ The seed describes the *contract* each integration must satisfy. Your answer nam
 
 ### §11.3 Datastore
 
-- Good: name the engine and the persistence model (e.g., "Postgres 16 with WAL-mode for the finding store").
+- Good: name the engine and the persistence model (e.g., "Postgres 16 with transactional writes for the finding store").
 - Anti: "SQLite or Postgres depending on env." Pick one for the seed run.
 
 ### §11.4 Vector search
@@ -68,7 +68,7 @@ The seed describes the *contract* each integration must satisfy. Your answer nam
 ### §11.7 Authentication model
 
 - Good: "OIDC with [IdP], scoped service accounts per role."
-- Anti: "Shared credentials checked into the agent image." (Triggers [`codeguard-1-hardcoded-credentials`](../../AGENTS.md) regardless of whether the rule is in your CI.)
+- Anti: "Shared credentials checked into the agent image." ([Project CodeGuard](https://github.com/cosai-oasis/project-codeguard) rule `codeguard-1-hardcoded-credentials`; CWE-798; presence-is-the-vulnerability per FR-087a.)
 
 ### §11.8 Agent harness
 
@@ -92,7 +92,7 @@ The seed describes the *contract* each integration must satisfy. Your answer nam
 
 ### §11.12 Testbed
 
-- Good: "Yes; isolated VM cluster reachable only from the Validator's egress allowlist." Or: "No testbed; Validator falls back to evidence-only." (Principle VII: Exploited Means Demonstrated; without a testbed you cannot set `exploited`.)
+- Good: "Yes; isolated VM cluster reachable from the per-role egress allowlist (Validator required; Detector exploratory per FR-040; Triager may need access to satisfy FR-056 where configured)." Or: "No testbed; Validator records 'no testbed' per FR-066." (Principle VII: Exploited Means Demonstrated; without a testbed you cannot set `exploited`.)
 - Anti: "Sometimes we run against production." That's not a testbed.
 
 ## Group C: Policy choices
