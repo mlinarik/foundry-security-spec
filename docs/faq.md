@@ -56,7 +56,7 @@ This matches the seed's design. You are not deviating; you are not yet complete.
 
 ### Option 2: merge roles
 
-In `/speckit.clarify`, the Identity & scope section asks whether to merge / split / omit core roles ([§4.2 marker](../spec.md#42-the-eight-core-roles)). For a small team, merging Triager + Validator into one role is a valid answer (both produce verdicts, with the Validator adding the testbed reproduction step).
+In `/speckit.clarify`, the Identity & scope section asks whether to merge / split / omit core roles ([§4.2 marker](../spec.md#42-the-eight-core-roles)). For a small team, merging Triager + Validator into one role is a valid answer, as long as the merged role still assigns Triager verdicts and performs Validator reproduction and `exploited` handling where a testbed is configured.
 
 What you cannot do: skip a *responsibility*. Even merged, the merged role must perform both functions. Specifically the evidence gate ([§7.3](../spec.md#73-evidence-gate)) and the `exploited` requirement ([Principle VII](../constitution.md#vii-exploited-means-demonstrated)) remain.
 
@@ -80,7 +80,7 @@ The principles are **inviolable invariants** that any implementation must uphold
 
 The FRs are the **specific requirements** the seed imposes to enforce the principles in concrete terms. Most FRs implement a principle; some FRs are operational details of the system shape.
 
-The mapping is documented in [`docs/reference/principle-fr-matrix.md`](reference/principle-fr-matrix.md). Every principle has at least one Primary FR; the constitution requires this (no GAP rows).
+The mapping is documented in [`docs/reference/principle-fr-matrix.md`](reference/principle-fr-matrix.md). The constitution's [Compliance review](../constitution.md#compliance-review) requires every principle to have enforcing FR coverage (no GAP rows).
 
 ## Can I use a different LLM provider mid-evaluation?
 
@@ -94,9 +94,9 @@ See [`docs/adoption/integration-decisions.md` §11.2](adoption/integration-decis
 
 Yes. The trade-off is explicit in [`spec.md` §11.12](../spec.md#1112-testbed) and [Principle VII](../constitution.md#vii-exploited-means-demonstrated): without a testbed, the Validator cannot independently reproduce findings, so `exploited` cannot be set.
 
-- **IMPORTANT**: Without a testbed, findings will be much lower confidence. The amount of `false-positives` could be high. 
+- **IMPORTANT**: Without a testbed, findings may carry lower review confidence because independent runtime reproduction is not possible. Reviewers may find a higher number of false positives, especially for issues whose exploitability depends on runtime behavior.
 
-You will still produce confirmed `true-positive` findings (with evidence-gate citations), but no `exploited=true` findings. Document the limitation in your spec. Basic static analysis can't distinguish exploitable paths from theoretically-vulnerable-but-unreachable ones, and there's no PoC to prove the issue is real. For Generative AI this hits harder since model behavior is stochastic and only verifiable empirically.
+You can still produce confirmed `true-positive` findings when the Triager evidence gate is satisfied. The Validator still produces a PoC artifact without running it ([FR-066](../spec.md#56-validator)), but it cannot set `exploited=true` or prove runtime impact. Document the limitation in your spec. For Generative AI this hits harder since model behavior is stochastic and only verifiable empirically.
 
 ## The seed says "exploited" is the strongest signal — but my reviewers don't filter on it. What now?
 
