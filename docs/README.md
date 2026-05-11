@@ -26,8 +26,7 @@ docs/
 ├── worked-examples/          ← concrete case studies (clarification, rule, evidence)
 ├── reference/                ← lookup tables (FR index, principle×FR matrix)
 ├── governance/               ← procedural how-to for amendments and versioning
-├── operations/               ← organization-neutral implementation patterns
-└── diagrams/                 ← shared mermaid / png assets
+└── operations/               ← organization-neutral implementation patterns
 ```
 
 ## Audience map
