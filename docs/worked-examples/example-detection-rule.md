@@ -8,7 +8,7 @@ This page uses [CodeGuard](https://github.com/cosai-oasis/project-codeguard) for
 
 ## The rule
 
-A simplified rule targeting `subprocess.shell=True` with user-controlled input in Python:
+A simplified rule targeting shell-command calls with user-controlled input in Python:
 
 ```yaml
 id: codeguard-py-shell-injection-from-flask
@@ -23,8 +23,8 @@ applies_to:
   - or os.system / os.popen
 trigger_when:
   - the command argument is reachable from a Flask route handler argument
-  - and there is no intermediate call to shlex.quote, shlex.split, or a
-    documented allowlist
+  - and there is no structured argv form, documented allowlist, or other
+    shell-free command construction
 example_positive: |
   @app.route("/run")
   def run():
@@ -34,7 +34,7 @@ example_negative: |
   @app.route("/run")
   def run():
       cmd = request.args.get("cmd")
-      subprocess.run(["/bin/echo", shlex.quote(cmd)])
+      subprocess.run(["/bin/echo", cmd], shell=False)
 ```
 
 This is a sketch. A real CodeGuard rule has more structure (test cases, generation hints, etc.); see the [CodeGuard repo](https://github.com/cosai-oasis/project-codeguard) for the actual schema.
@@ -86,8 +86,8 @@ This is the [rule-gap flywheel](../architecture/rule-gap-flywheel.md) in action.
 
 - It does not set `exploited`. That is the Validator's exclusive authority ([FR-089](../../spec.md#74-exploited), [Principle VII](../../constitution.md#vii-exploited-means-demonstrated)).
 - It does not assign severity. The Reporter does that, against the operator's chosen rubric ([§11.9](../../spec.md#119-severity--classification-schemes)). The rule's `severity: high` is a *hint*; the Reporter applies its own rubric.
-- It does not produce issues. Only the Reporter writes to the tracker ([FR-072+](../../spec.md#58-reporter)).
-- It does not promote findings. Only the Triager promotes ([FR-066](../../spec.md#55-triager)).
+- It does not produce issues. Only the Reporter writes to the tracker ([FR-078–FR-080](../../spec.md#58-reporter)).
+- It does not promote findings. Only the Triager assigns `true-positive` after the evidence gate and surfaces true positives via Reporter ([FR-052, FR-057](../../spec.md#55-triager)).
 - It does not deduplicate. The Detector deduplicates against the finding store ([FR-045](../../spec.md#54-detector)).
 
 These are not the rule's job. The rule is a single, focused signal; the rest of the system is the machinery that makes the signal valuable.

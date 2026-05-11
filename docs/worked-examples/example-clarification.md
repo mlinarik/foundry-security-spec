@@ -131,7 +131,7 @@ The status block at the top now reads:
 
 Acme runs `/speckit.clarify` again. The agent reports markers exist:
 
-> **Agent:** §11.1 mentions GitHub Enterprise Server. Spectre's Reporter (FR-072) writes issues, but the GHES instance Acme uses is at a custom hostname behind their VPN. What is the API endpoint?
+> **Agent:** §11.1 mentions GitHub Enterprise Server. Spectre's Reporter writes issues, but the GHES instance Acme uses is at a custom hostname behind their VPN. What is the API endpoint?
 
 **Operator:** "https://github.acme-internal.example/api/v3"
 

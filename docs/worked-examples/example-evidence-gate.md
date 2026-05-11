@@ -28,12 +28,12 @@ A `true-positive` verdict with three citations:
 | Leg | Citation | Resolves? |
 |---|---|---|
 | Reachability | `app/routes/admin.py:handle_export()` is registered to route `/admin/export` in `app/__init__.py:42`. The route requires authentication, but session cookies are issued to any logged-in user. | yes |
-| Trust boundary | `request.args.get("user_id")` is read directly from query string at `app/routes/admin.py:handle_export():3`. No validation, sanitization, or parameterization is applied before string interpolation into SQL at line 4. | yes |
-| Impact | `cursor.execute()` at `app/routes/admin.py:handle_export():4` uses string interpolation, allowing arbitrary SQL. The DB user has read access to all tables in the application schema (verified via `app/db/conn.py:CONNECTION_DSN`), so a crafted `user_id` exfiltrates any user record. | yes |
+| Trust boundary | `request.args.get("user_id")` is read directly from query string at `app/routes/admin.py:handle_export():2`. No validation, sanitization, or parameterization is applied before string interpolation into SQL at line 3. | yes |
+| Impact | `cursor.execute()` at `app/routes/admin.py:handle_export():3` uses string interpolation, allowing arbitrary SQL. The DB user has read access to all tables in the application schema (verified via `app/db/conn.py:CONNECTION_DSN`), so a crafted `user_id` exfiltrates any user record. | yes |
 
 ### Mechanical check
 
-The Validator confirms each cited line resolves to real code in the target. All three resolve. The verdict stands as `true-positive`.
+The evidence-gate citation check confirms each cited line resolves to real code in the target. All three resolve. The verdict stands as `true-positive`.
 
 If the testbed is configured, the Validator may further attempt independent reproduction. On successful reproduction of the headline impact ("read another user's record"), `exploited=true` is set ([FR-089](../../spec.md#74-exploited), [Principle VII](../../constitution.md#vii-exploited-means-demonstrated)).
 
@@ -70,7 +70,7 @@ A `true-positive` verdict with three citations:
 
 ### Mechanical check
 
-The Validator runs the citation resolver:
+The evidence-gate citation resolver checks:
 
 - `services/payments/process.py:handle_callback()` — **resolves**.
 - `services/payments/__init__.py:31` — **does not resolve**. The file exists; line 31 is inside an unrelated function. The actual route registration is at `services/payments/__init__.py:54`.
@@ -79,7 +79,7 @@ By [FR-088](../../spec.md#73-evidence-gate), a citation that does not resolve de
 
 ### Result
 
-Verdict demoted to `needs-review`. The finding stays in the internal store; it does not surface to the issue tracker (because `needs-review` does not surface for Acme — see [`example-clarification.md`](example-clarification.md) round 1 policy answers, or per your own §7.6 policy).
+Verdict demoted to `needs-review`. The finding stays in the internal store; it does not surface to the issue tracker (because `needs-review` does not surface for Acme — see [`example-clarification.md`](example-clarification.md) round 1 policy answers, or per your own FR-057 clarification).
 
 A re-triage with a corrected reachability citation could promote the verdict back to `true-positive`. Until then, the gate has done its job: prevented an under-evidenced claim from reaching reviewers.
 
@@ -99,9 +99,9 @@ The Detector flags `lib/utils/format.py:safe_join()` for path traversal (CWE-22)
 
 ```python
 def safe_join(base, untrusted_path):
-    candidate = os.path.join(base, untrusted_path)
-    candidate = os.path.realpath(candidate)
-    if not candidate.startswith(base):
+    base_path = os.path.realpath(base)
+    candidate = os.path.realpath(os.path.join(base_path, untrusted_path))
+    if os.path.commonpath([base_path, candidate]) != base_path:
         raise ValueError("Path traversal attempt")
     return candidate
 ```
@@ -114,13 +114,13 @@ The Triager investigates and concludes the function is **correctly implemented**
 
 - `os.path.join` does drop earlier components when given an absolute path (`/etc/passwd` becomes the entire result).
 - `realpath` then resolves it.
-- The `startswith(base)` check then rejects it because `/etc/passwd` does not start with `base`.
+- The `commonpath([base_path, candidate]) != base_path` check then rejects it because `/etc/passwd` is outside the allowed base directory.
 - A `ValueError` is raised.
 
 The candidate is a false-positive. The Triager records:
 
 - Verdict: `false-positive`.
-- Reasoning: "Detector hypothesis is incorrect; `startswith` check after `realpath` is precisely the right structure to defeat traversal. Function is correct."
+- Reasoning: "Detector hypothesis is incorrect; `commonpath` containment after `realpath` is precisely the right structure to defeat traversal. Function is correct."
 
 ### Result
 
