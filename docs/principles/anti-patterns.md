@@ -108,7 +108,7 @@ If a pattern below appears in a proposal, it does **not** automatically mean the
 
 | Anti-pattern | Why it fails |
 |---|---|
-| **Prompt-level network rules as the only boundary.** "We told the agent not to call external hosts." | Agents read untrusted content; that content can contain instructions. The boundary must be unargueable. |
+| **Prompt-level network rules as the only boundary.** "We told the agent not to call external hosts." | Agents read untrusted content; that content can contain instructions. The boundary must be unarguable. |
 | **"The agent will not write to /etc because we told it not to."** | Same problem; instructions in the target's content can override. |
 | **A sandbox that "should" block egress** (no verification ritual). | If you have not run a curl from inside the sandbox to confirm it is blocked, the boundary does not exist. |
 | **Allowlisting "dev/test domains" without scrutiny.** | An allowlisted host can become a pivot to anything that host can reach. |
@@ -143,7 +143,7 @@ If a pattern below appears in a proposal, it does **not** automatically mean the
 ## How to use this catalog in review
 
 1. Read the proposal (plan, task, code change, or PR description).
-2. Scan the table-of-contents below for any of the rejected patterns.
+2. Scan the tables above for any of the rejected patterns.
 3. If you find one, ask: "what failure does this pattern reproduce, and why does the proposer believe it does not apply here?"
 4. If the answer is convincing, document it; the proposal may be sound.
 5. If the answer is "it will be fine," reject and link this page.
