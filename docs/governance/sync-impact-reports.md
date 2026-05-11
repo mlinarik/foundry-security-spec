@@ -30,7 +30,7 @@ The block is **regenerated**, not appended. Each constitution change replaces th
 
 ### `Version change`
 
-Format: `<previous>.<MAJOR>.<MINOR>.<PATCH> → <next>` followed by `[<tier>: <one-line reason>]`.
+Format: `<prev> → <next>`, where each is `MAJOR.MINOR.PATCH`, followed by `[<tier>: <one-line reason>]`.
 
 The tier MUST match the change semantics:
 

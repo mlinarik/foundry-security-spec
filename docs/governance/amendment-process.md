@@ -129,7 +129,7 @@ Per the constitution's *Downstream artifacts re-checked on change* table:
 
 If any check fails, the failure is in the downstream artifact (not in the constitution); fix the artifact.
 
-### 5. Re-regenerate the principle × FR matrix
+### 5. Regenerate the principle × FR matrix
 
 [`../reference/principle-fr-matrix.md`](../reference/principle-fr-matrix.md). If any row is `GAP`, the release is blocked. Either:
 
