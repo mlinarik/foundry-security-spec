@@ -46,10 +46,10 @@ If a pattern below seems insufficient for your environment, the answer is to har
 ```
 docker exec -it <agent-container> /bin/sh
 # inside the container:
-curl https://attacker.example          # MUST be blocked
-echo X >> /etc/hosts                   # MUST be denied
-echo X >> /target/source/file.go       # MUST be denied (read-only)
-curl https://allowlisted-llm.example   # MUST succeed
+curl --connect-timeout 3 --max-time 10 https://attacker.example       # MUST be blocked
+echo X >> /etc/hosts                                                  # MUST be denied
+echo X >> /target/source/file.go                                      # MUST be denied (read-only)
+curl --fail --connect-timeout 3 --max-time 10 https://allowlisted-llm.example   # MUST succeed
 ```
 
 If any of the four behaves wrongly, the sandbox is misconfigured. Fix and re-verify.

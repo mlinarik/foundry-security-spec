@@ -29,7 +29,7 @@ The Operator dashboard MUST show, at minimum:
 - [ ] By severity tier.
 - [ ] By exploited yes/no.
 
-**Source:** the finding store. Count metrics, refreshed on every Triager/Validator write. The dashboard should also show first-derivative (rate of change) so an operator can spot a stalled pipeline.
+**Source:** the finding store. Count metrics, refreshed on writes that change verdict, severity, or `exploited` status. The dashboard should also show first-derivative (rate of change) so an operator can spot a stalled pipeline.
 
 ### Coverage checklist state
 
@@ -83,7 +83,7 @@ The Operator dashboard MUST show, at minimum:
 **Implementation patterns:**
 
 - One log file per session, JSON-lines, written to S3 / GCS / object store at session end (or streamed via a write-ahead log if sessions are very long).
-- Strict redaction of secrets and PII before write — see [`codeguard-0-logging`](../../AGENTS.md).
+- Strict redaction of secrets and PII before write ([Project CodeGuard](https://github.com/cosai-oasis/project-codeguard) rule `codeguard-0-logging`).
 
 ## Cost & token rollups (FR-123)
 
@@ -105,7 +105,7 @@ The Operator dashboard MUST show, at minimum:
 
 **Implementation patterns:**
 
-- Dashboard reads directly from the substrate (no intermediate cache > 1 second).
+- Dashboard reads directly from the substrate, or uses only short-lived caches with reconciliation against the substrate.
 - The status query and dashboard share a single read path / view so they cannot diverge.
 - A periodic reconciliation job verifies that aggregate metrics match an authoritative recount; alerts on drift.
 
@@ -156,9 +156,9 @@ If any item fails, observability is not yet adequate.
 ## Anti-patterns
 
 - **"Logs only — operators tail with grep."** Loses every aggregate signal; operators stop looking at the system. Violates the spirit of FR-120.
-- **"Dashboard built from cached metrics."** Drift from substrate is inevitable; FR-124 fails.
+- **"Dashboard built from stale cached metrics."** Drift from substrate is inevitable; FR-124 fails.
 - **"Add observability later, after the system works."** Without observability, you cannot tell whether the system is working.
-- **Logging secrets, tokens, or raw session IDs.** Forbidden — see [`codeguard-0-logging`](../../AGENTS.md). Redact at emission, not at consumption.
+- **Logging secrets, tokens, or raw session IDs.** Forbidden ([Project CodeGuard](https://github.com/cosai-oasis/project-codeguard) rule `codeguard-0-logging`). Redact at emission, not at consumption.
 
 ## See also
 

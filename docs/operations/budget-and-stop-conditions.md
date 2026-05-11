@@ -56,7 +56,7 @@ yield(t) = ΣᵢweightedSeverity(findingᵢ) × exploitedMultiplier(findingᵢ)
 
 Where:
 
-- The sum runs over confirmed findings whose Reporter-write timestamp falls in the trailing window.
+- The sum runs over confirmed findings whose `true-positive` confirmation timestamp falls in the trailing window.
 - `weightedSeverity` follows a geometric scale (FR-117 rationale): roughly 3.15× per tier, calibrated against multi-year bug-bounty payout ratios.
 - `exploitedMultiplier` is 2× for findings with `exploited=true`.
 
