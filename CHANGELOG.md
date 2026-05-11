@@ -17,7 +17,7 @@ When either changes at MINOR or above, a new entry below records the diff and th
 
 ### Added
 
-- `docs/` directory: index, adoption guides (quickstart, clarification playbook, integration decisions, extension roles), architecture views (role interactions, finding lifecycle, substrate contracts, rule-gap flywheel), principles deep dives and anti-patterns, worked examples (clarification, detection rule, evidence gate), reference tables (FR index, principle × FR matrix, open-questions checklist, terminology quick card), governance how-tos (amendment process, versioning, sync impact reports), operations guides (observability checklist, sandbox patterns, budget and stop conditions), and FAQ.
+- `docs/` directory: index, adoption guides (quickstart, clarification playbook, integration decisions, extension roles), architecture views (role interactions, finding lifecycle, substrate contracts, rule-gap flywheel), principles anti-patterns, worked examples (clarification, detection rule, evidence gate), reference tables (FR index, principle × FR matrix, open-questions checklist, terminology quick card), governance how-tos (amendment process, versioning, sync impact reports), operations guides (observability checklist, sandbox patterns, budget and stop conditions), and FAQ.
 - Root `GLOSSARY.md` — standalone glossary mirrored from `spec.md` §2 (referenced by README's *What's in this repository* table; previously missing).
 - Root `CHANGELOG.md` — this file (referenced by README and the version badge; previously missing).
 
