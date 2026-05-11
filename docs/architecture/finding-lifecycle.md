@@ -13,12 +13,13 @@ stateDiagram-v2
     candidate --> confirmed: Triager promotes to true-positive
     candidate --> needs_review: Triager promotes but evidence ambiguous
 
-    confirmed --> needs_review: Validator demotes<br/>(citations do not resolve; FR-088, Principle I)
-    confirmed --> exploited_yes: Validator confirms via testbed<br/>(FR-060, FR-061, Principle VII)
+    confirmed --> needs_review: re-triage if citations do not resolve<br/>(FR-088, Principle I)
+    confirmed --> exploited_yes: Validator demonstrates via testbed<br/>(FR-060, FR-061, Principle VII)
     confirmed --> exploited_no: Validator unable to demonstrate<br/>(no testbed, or POC failed)
 
-    exploited_yes --> published: Reporter writes/updates issue (FR-072+)
-    exploited_no --> published: Reporter writes/updates issue (FR-072+)
+    confirmed --> published: Reporter writes/updates issue (FR-078 to FR-080)
+    exploited_yes --> published: Reporter updates issue (FR-080)
+    exploited_no --> published: Reporter updates issue (FR-080)
 
     needs_review --> confirmed: re-triage with new evidence
     needs_review --> recorded: re-triage rejects
@@ -46,9 +47,9 @@ From [`spec.md` §7.2](../../spec.md#72-verdicts):
 
 | Verdict | Surfaces? | Authority |
 |---|---|---|
-| `true-positive` | Yes (FR-057) | Triager promotes; Validator may demote (Principle I) |
+| `true-positive` | Yes (FR-057) | Triager assigns after evidence gate (FR-052) |
 | `false-positive` | No | Triager |
-| `needs-review` | Per FR-057 clarification | Triager / Validator |
+| `needs-review` | Per FR-057 clarification | Triager |
 | `not-applicable` | No | Triager |
 | `code-quality` | No | Triager |
 
@@ -62,13 +63,13 @@ Each `true-positive` MUST carry citations for three legs:
 
 ```mermaid
 flowchart LR
-    A[true-positive verdict] --> B{Has citation for<br/>(a) reachability?}
+    A[true-positive verdict] --> B{"Has citation for<br/>(a) reachability?"}
     B -- no --> X[demote to needs-review]
-    B -- yes --> C{Has citation for<br/>(b) trust boundary?<br/>FR-087a carve-out applies}
+    B -- yes --> C{"Has citation for<br/>(b) trust boundary?<br/>FR-087a carve-out applies"}
     C -- no --> X
-    C -- yes --> D{Has citation for<br/>(c) impact?}
+    C -- yes --> D{"Has citation for<br/>(c) impact?"}
     D -- no --> X
-    D -- yes --> E{All citations<br/>mechanically resolve?<br/>FR-088}
+    D -- yes --> E{"All citations<br/>mechanically resolve?<br/>FR-088"}
     E -- no --> X
     E -- yes --> F[confirmed true-positive]
 ```
@@ -102,8 +103,8 @@ flowchart LR
     candidate -- Detector wrote it --> store[(Finding Store)]
     store -- Triager rejected --> store
     store -- Triager promoted --> store_promoted[(Finding Store: promoted)]
-    store_promoted -- Validator demoted --> store
-    store_promoted -- Validator confirmed --> tracker[Issue Tracker / Reports]
+    store_promoted -- Reporter publishes --> tracker[Issue Tracker / Reports]
+    store_promoted -- Validator may set exploited --> store_promoted
 
     classDef internal fill:#f6f6f6,stroke:#999;
     classDef surfaced fill:#eef7ee,stroke:#3a8;
@@ -111,7 +112,7 @@ flowchart LR
     class tracker surfaced;
 ```
 
-Detection volume is high by design. Triage rejection volume is also high — and that is fine. The reviewer never sees rejected candidates. They see only what survived triage *and* validation.
+Detection volume is high by design. Triage rejection volume is also high — and that is fine. The reviewer never sees rejected candidates. They see only what survived triage; validation may later add an `exploited` status.
 
 The internal store retains rejected findings (FR-086) so that re-runs can recognize "we already looked at this" and re-runs do not re-surface known-rejected findings.
 
@@ -141,9 +142,8 @@ Deduplication, cross-run inheritance, and "update issue, do not recreate" all ke
 
 | Transition | Principle | FR(s) |
 |---|---|---|
-| Triager promotion | II — Surface only what survives | FR-066, FR-085 |
-| Verdict assignment | I — Evidence over assertion | FR-087, FR-088 |
-| Validator demotion | I | FR-088 |
+| True-positive surfacing gate | II — Surface only what survives | FR-057, FR-079 |
+| Verdict assignment | I — Evidence over assertion | FR-052, FR-087, FR-088 |
 | `exploited` flag set | VII — Exploited means demonstrated | FR-060, FR-061, FR-089 |
 | Issue tracker write | VIII — Fingerprints stable under edit | FR-090, FR-091 |
 | Internal retention of rejections | II | FR-086 |

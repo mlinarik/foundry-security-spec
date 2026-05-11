@@ -20,32 +20,33 @@ sequenceDiagram
     Detector->>FindingStore: write candidate (FR-043, FR-044)
     Note over Detector,FindingStore: Dedup by fingerprint (FR-045, FR-090)
 
-    Triager->>FindingStore: claim candidate (atomic; Principle IV)
+    Triager->>FindingStore: claim candidate (atomic, Principle IV)
     Triager->>Triager: investigate per §5.5 procedure
-    alt promotes
-        Triager->>FindingStore: write triaged finding<br/>verdict ∈ {true-positive, needs-review}
-        Triager->>FindingStore: record rule-gap if applicable (FR-042)
+    Triager->>Triager: apply evidence gate (FR-052, §7.3)
+    alt assigns true-positive or needs-review
+        Triager->>FindingStore: write triaged finding<br/>verdict true-positive or needs-review
+        Triager->>FindingStore: record rule-gap for true-positive if applicable (FR-042)
     else rejects
-        Triager->>FindingStore: write rejected verdict (kept internal; Principle II)
+        Triager->>FindingStore: write rejected verdict (kept internal, Principle II)
     end
 
-    Validator->>FindingStore: claim true-positive
-    Validator->>Validator: evidence gate (§7.3)
-    alt evidence resolves
-        Validator->>FindingStore: confirm true-positive
-    else citations do not resolve
-        Validator->>FindingStore: demote to needs-review (Principle I)
-    end
+    Reporter->>FindingStore: claim true-positive report
+    Reporter->>IssueTracker: write or update issue<br/>(keyed on fingerprint, FR-090, Principle VIII)
 
-    Reporter->>FindingStore: claim confirmed true-positive
-    Reporter->>IssueTracker: write or update issue<br/>(keyed on fingerprint; FR-090, Principle VIII)
+    Validator->>FindingStore: claim true-positive for reproduction
+    Validator->>Validator: independent reproduction (FR-060, FR-061)
+    alt headline impact observed
+        Validator->>FindingStore: set exploited (FR-089)
+    else no testbed or impact not observed
+        Validator->>FindingStore: leave exploited unset (FR-062, FR-066)
+    end
 ```
 
 **Key invariants visible in the flow:**
 
 - The Detector never writes to the issue tracker (FR-044).
-- The Triager is the only role that promotes a finding to surfaceable status (FR-066).
-- The Validator may demote a Triager-promoted finding if evidence does not resolve. This is required by Principle I, not optional.
+- The Triager is the only role that promotes a finding to surfaceable status (FR-052, FR-057).
+- The Validator owns independent reproduction and the `exploited` flag, not verdict promotion or demotion (FR-060, FR-061, FR-089).
 - The Reporter keys on fingerprint, not line number (FR-090, Principle VIII), so cross-run inheritance and "update, do not recreate" both work.
 
 ## 2. Orchestrator heartbeat / reclaim
@@ -88,7 +89,6 @@ Coverage-Before-Yield (Principle VI).
 ```mermaid
 sequenceDiagram
     participant CoverageGuide
-    participant Detector
     participant Substrate
     participant Orchestrator
 
@@ -96,7 +96,7 @@ sequenceDiagram
         CoverageGuide->>Substrate: read detection output, scope, history
         CoverageGuide->>CoverageGuide: compute coverage map (§5.7)
         alt gaps exist
-            CoverageGuide->>Detector: steer toward uncovered area<br/>(via shared notes, §8.4)
+            CoverageGuide->>Substrate: queue directed task on work queue<br/>(FR-070)
         else no gaps
             CoverageGuide->>Substrate: set coverage-complete flag
         end
