@@ -81,7 +81,7 @@ For deeper guidance on each, see [`../adoption/clarification-playbook.md`](../ad
 - [ ] **§6.4** — Remediator in scope?
 - [ ] **§6.5** — Self-Improver in scope?
 
-For each "yes", expect specify to author new FRs that carry their own markers — see [`../adoption/extension-roles-when.md`](../adoption/extension-roles-when.md).
+For each "yes", expect `/speckit.specify` to author new FRs that carry their own markers — see [`../adoption/extension-roles-when.md`](../adoption/extension-roles-when.md).
 
 ---
 

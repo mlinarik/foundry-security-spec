@@ -20,7 +20,7 @@ If this matrix and the spec disagree, the spec wins; this page is updated.
 | Principle | Title | Primary FR(s) | Supporting FR(s) | Status |
 |---|---|---|---|---|
 | I | [Evidence Over Assertion](../../constitution.md#i-evidence-over-assertion) | FR-087, FR-087a, FR-088 | FR-053–FR-058 (Triager), FR-059–FR-064 (Validator), FR-085, FR-086 | OK |
-| II | [Surface Only What Survives](../../constitution.md#ii-surface-only-what-survives) | FR-044, FR-066, FR-072 | FR-042 (rule-gap), FR-045 (dedup), FR-086 (retain rejected), FR-090–FR-091 (fingerprint), FR-092 (label set) | OK |
+| II | [Surface Only What Survives](../../constitution.md#ii-surface-only-what-survives) | FR-044, FR-057, FR-079 | FR-042 (rule-gap), FR-045 (dedup), FR-078 (publish true-positive reports), FR-086 (retain rejected), FR-090–FR-091 (fingerprint), FR-092 (label set) | OK |
 | III | [Liveness By Heartbeat, Never By Clock](../../constitution.md#iii-liveness-by-heartbeat-never-by-clock) | FR-005, FR-100, FR-101 | FR-007 (crash-loop backoff), FR-118 (session rotation, *not* liveness) | OK |
 | IV | [Claims Are Atomic And Mortal](../../constitution.md#iv-claims-are-atomic-and-mortal) | FR-095, FR-096 | FR-097 (auto-block on N releases), FR-098 (operator-/agent-writable), FR-099 (stable ids) | OK |
 | V | [The Provider Is The Rate Arbiter](../../constitution.md#v-the-provider-is-the-rate-arbiter) | FR-105, FR-106 | FR-113 (cost/token tracking) | OK |
@@ -37,11 +37,11 @@ All eleven principles have at least one Primary FR. **No GAP rows.** Status: mat
 
 ### I — Evidence Over Assertion
 
-The two primary FRs make the verdict structurally checkable (FR-087: three-leg evidence) and mechanically checked (FR-088: citations resolve). FR-087a is the narrow carve-out for presence-is-the-vulnerability classes.
+FR-087 and FR-088 make the verdict structurally checkable (three-leg evidence) and mechanically checked (citations resolve). FR-087a is the narrow carve-out for presence-is-the-vulnerability classes.
 
 ### II — Surface Only What Survives
 
-The Detector cannot directly surface (FR-044). The Triager is the only role that promotes (FR-066). The Reporter is the only role that writes to the issue tracker (FR-072). Each of those is a primary enforcer — removing any one of them re-introduces the failure.
+The Detector cannot directly surface (FR-044). The Triager surfaces only `true-positive` findings via Reporter (FR-057). The Reporter must not publish any non-`true-positive` finding (FR-079). Each of those is a primary enforcer — removing any one of them re-introduces the failure.
 
 ### III — Liveness By Heartbeat, Never By Clock
 
@@ -69,7 +69,7 @@ FR-090 defines the fingerprint structure (path + symbol + class). FR-091 keys de
 
 ### IX — Sandbox By Infrastructure, Not By Prompt
 
-FR-107 mandates infrastructure enforcement. FR-108 requires read-only mounts. Together they make the boundary unargueable.
+FR-107 mandates infrastructure enforcement. FR-108 requires read-only mounts. Together they make the boundary unarguable.
 
 ### X — The Operator Outranks Every Agent
 

@@ -74,7 +74,7 @@ Operator ──► Orchestrator ──► Substrate ──► Roles (8 core, 5 e
 ## Things this card deliberately omits
 
 - Full definitions with rationale — see [spec §2](../../spec.md#2-glossary).
-- Variant terms used in different communities — see [`GLOSSARY.md`](../../GLOSSARY.md) for any synonyms once it lands.
+- Variant terms used in different communities — see [`GLOSSARY.md`](../../GLOSSARY.md) for any synonyms.
 - Implementation-specific terms ("our queue is a Postgres table") — those are clarification answers, not core terminology.
 
 ## See also
