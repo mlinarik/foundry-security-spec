@@ -11,5 +11,13 @@
     "capabilities": "ALL dropped",
     "privilege_escalation": false
   },
-  "kubernetes_deployment": "not applied; deployment scope clarification pending"
+  "kubernetes_deployment": {
+    "namespace": "foundry-v2-validation",
+    "job": "foundry-v2-foundation-d12b8b20dbd3",
+    "status": "Pending: insufficient worker memory",
+    "applied_on": "2026-10-11",
+    "server_dry_run": "passed",
+    "tests_completed": false,
+    "scheduling_blocker": "Ready workers have insufficient unreserved memory for the 256Mi request; one worker is NotReady and control-plane nodes are tainted."
+  }
 }
