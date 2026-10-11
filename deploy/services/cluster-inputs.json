@@ -3,6 +3,7 @@
   "storage_class": "local-storage",
   "storage_mode": "local-rwo",
   "transport": "http",
+  "orchestrator_service_type": "LoadBalancer",
   "local_node": "k8s0n1",
   "local_path": "/data/foundry-v2",
   "storage_size": "10Gi",

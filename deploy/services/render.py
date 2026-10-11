@@ -24,8 +24,11 @@ def render(image, config):
               'kubernetes_api_url','tokenreview_audience','tls_secret','infrastructure_secret',
               'registry_secret','stale_seconds','release_limit','reaper_seconds',
               'storage_mode','transport','local_node','local_path'}
-    if set(config)!=required:
+    if set(config)-{'orchestrator_service_type'}!=required:
         raise ValueError('Supply exactly the documented deployment inputs')
+    service_type=config.get('orchestrator_service_type','ClusterIP')
+    if service_type not in ('ClusterIP','LoadBalancer'):
+        raise ValueError('Orchestrator service type must be ClusterIP or LoadBalancer')
     namespace=dns(config['namespace'])
     for key in ('storage_class','infrastructure_secret','registry_secret'):
         dns(config[key])
@@ -99,11 +102,17 @@ def render(image, config):
                                 'claimRef':{'namespace':namespace,'name':'substrate-data'},
                                 'nodeAffinity':{'required':{'nodeSelectorTerms':[{'matchExpressions':[{
                                     'key':'kubernetes.io/hostname','operator':'In','values':[config['local_node']]}]}]}}}})
+    if service_type=='LoadBalancer':
+        objects.append({'apiVersion':'networking.k8s.io/v1','kind':'NetworkPolicy','metadata':meta('orchestrator-client-access'),
+                        'spec':{'podSelector':{'matchLabels':{'app.kubernetes.io/name':'orchestrator'}},
+                                'policyTypes':['Ingress'],'ingress':[{'ports':[{'port':port,'protocol':'TCP'}]}]}})
     for name in ('substrate','orchestrator'):
         pod_labels=dict(labels,**{'app.kubernetes.io/name':name})
         objects.append({'apiVersion':'v1','kind':'ServiceAccount','metadata':meta(name),'automountServiceAccountToken':False})
         objects.append({'apiVersion':'v1','kind':'Service','metadata':meta(name),
                         'spec':{'selector':pod_labels,'ports':[{'name':'web','port':port,'targetPort':'web'}]}})
+        if name=='orchestrator' and service_type=='LoadBalancer':
+            objects[-1]['spec'].update(type='LoadBalancer',externalTrafficPolicy='Local',allocateLoadBalancerNodePorts=False)
         volumes=[{'name':'config','configMap':{'name':'service-config','defaultMode':0o444}},
                  {'name':'kubernetes-ca','configMap':{'name':'kube-root-ca.crt','defaultMode':0o444}},
                  {'name':'tokenreview','projected':{'defaultMode':0o440,'sources':[{'serviceAccountToken':{'path':'token','expirationSeconds':3600}}]}},

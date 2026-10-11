@@ -50,6 +50,8 @@ kubectl port-forward -n foundry-v2 service/orchestrator 8080:8080 --address 127.
 kubectl create token operator -n foundry-v2 --audience=foundry-v2 --duration=15m
 ```
 
-Open http://127.0.0.1:8080 and paste the token into the dashboard. The token is not saved to disk or browser storage. No public ingress, DNS record or model workload is installed.
+Open http://127.0.0.1:8080 and paste the token into the dashboard. The token is not saved to disk or browser storage. No Ingress, DNS record or model workload is installed. The Orchestrator LoadBalancer Service receives its LAN address from MetalLB; the substrate stays cluster-internal.
 
 Deployment evidence: `deploy/services/live-results.json` records service readiness, TokenReview positive/negative checks, restart persistence, owner lock and read-only mount checks. All 53 structural tests passed both in the restricted local Linux container and in the isolated Kubernetes validation Job; its output is `deploy/services/kubernetes-test-results.txt`. The two running services use the immutable image recorded in `deploy/images/published-services.json`.
+
+MetalLB exposes the dashboard at http://10.2.0.165:8080 from `prod-pool`. `orchestrator_service_type: LoadBalancer` enables it in the cluster profile, with local traffic routing and no NodePort allocation. The client-access policy allows only the Orchestrator web port; bearer checks remain required for APIs. The port-forward command is an optional alternate access path.
