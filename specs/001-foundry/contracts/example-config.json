@@ -1,0 +1,131 @@
+{
+  "schema_version": "0.1.0",
+  "name": "authorized-fixture-evaluation",
+  "target": [
+    {
+      "repository": "https://github.com/REPLACE_OWNER/REPLACE_TARGET",
+      "revision": "0000000000000000000000000000000000000000",
+      "include": [
+        "**/*.py",
+        "**/*.go"
+      ],
+      "exclude": [
+        "vendor/**",
+        "generated/**"
+      ]
+    }
+  ],
+  "goals": "Evaluate authentication, authorization, input handling, dependencies, and exposed secrets in the authorized fixture target.",
+  "testbed": null,
+  "rules": {
+    "hard_rules": [
+      "No denial of service, data deletion, credential changes, or actions affecting non-test users."
+    ]
+  },
+  "detection": {
+    "corpus_repository": "https://github.com/cosai-oasis/project-codeguard",
+    "corpus_revision": "5bfe8f937bf0a60bc567403a09280412007bc9cc",
+    "osv_database_ref": "operator-staged-osv-fixture-snapshot",
+    "techniques": [
+      "rule",
+      "dependency",
+      "secret",
+      "exploratory"
+    ]
+  },
+  "fleet": {
+    "counts": {
+      "indexer": 1,
+      "cartographer": 1,
+      "detector": 1,
+      "triager": 1,
+      "validator": 1,
+      "reporter": 1,
+      "coverage-guide": 1
+    },
+    "soft_session_seconds": 9000,
+    "hard_session_seconds": 9900,
+    "validator_attempts": 3,
+    "heartbeat_seconds": 10,
+    "stale_seconds": 60,
+    "monitor_seconds": 5,
+    "drain_seconds": 120,
+    "block_after_releases": 3,
+    "backoff_initial_seconds": 1,
+    "backoff_max_seconds": 1800,
+    "notes_max_bytes": 32768,
+    "message_dedup_seconds": 300
+  },
+  "sandbox": {
+    "namespace": "foundry-v2-evaluation",
+    "storage_class": "REPLACE_RWOP_BLOCK_STORAGE_CLASS",
+    "external_allowlist": [
+      {
+        "cidr": "192.0.2.10/32",
+        "ports": [
+          {
+            "port": 11434,
+            "protocol": "TCP"
+          }
+        ]
+      },
+      {
+        "cidr": "198.51.100.0/24",
+        "ports": [
+          {
+            "port": 443,
+            "protocol": "TCP"
+          }
+        ]
+      }
+    ],
+    "read_only_paths": [
+      "/target",
+      "/config",
+      "/prompts",
+      "/policy"
+    ],
+    "writable_paths": [
+      "/scratch",
+      "/artifacts"
+    ]
+  },
+  "budget": {
+    "spend_cap": null,
+    "runtime_cap_seconds": 3600,
+    "currency": "USD",
+    "input_per_million": 0,
+    "output_per_million": 0,
+    "yield_enabled": false,
+    "yield_window_spend": 1,
+    "yield_min_runtime_seconds": 600,
+    "yield_threshold": 0,
+    "severity_weights": {
+      "none": 0,
+      "low": 1,
+      "medium": 3.15,
+      "high": 9.9225,
+      "critical": 31.255875
+    },
+    "exploited_multiplier": 2
+  },
+  "integrations": {
+    "ollama": {
+      "base_url": "http://192.0.2.10:11434",
+      "model": "qwen3-coder:30b"
+    },
+    "github": {
+      "source_token_ref": "k8s-secret:github-service-account/token",
+      "report_repository": "REPLACE_OWNER/REPLACE_REPORTS",
+      "api_version": "2026-03-10"
+    },
+    "operator_auth": {
+      "allowed_subjects": [
+        "REPLACE_OPERATOR_SUBJECT"
+      ],
+      "allowed_groups": [],
+      "ingress_host": "foundry.example.invalid",
+      "tls_secret_ref": "REPLACE_TLS_SECRET"
+    }
+  }
+}
