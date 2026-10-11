@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools==80.9.0", "wheel==0.45.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "foundry-v2"
+version = "0.1.0"
+description = "Evidence-gated security evaluation infrastructure"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi==0.143.0", "uvicorn==0.54.0", "pydantic==2.14.0",
+  "langgraph==1.2.14", "ollama==0.6.3", "httpx==0.28.1",
+  "PyYAML==6.0.3", "tree-sitter==0.26.0",
+  "tree-sitter-python==0.25.0", "tree-sitter-go==0.25.0", "cvss==3.6",
+  "jsonschema==4.26.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest==9.1.1"]
+
+[project.scripts]
+foundry-v2 = "foundry_v2.cli:main"
+foundry-v2-orchestrator = "foundry_v2.orchestrator.__main__:main"
+foundry-v2-substrate = "foundry_v2.substrate.__main__:main"
+foundry-v2-worker = "foundry_v2.workers.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+foundry_v2 = ["contracts/*.json", "substrate/migrations/*.sql", "static/*", "templates/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+  "live_cluster: needs an explicitly authorized disposable Kubernetes environment",
+  "live_model: needs the operator-selected private Ollama endpoint",
+]

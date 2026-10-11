@@ -1,7 +1,7 @@
 # Tasks: Foundry-v2
 
 **Input**: [plan.md](plan.md), [spec.md](spec.md), [research.md](research.md), [data-model.md](data-model.md), [contracts](contracts/README.md), [quickstart.md](quickstart.md), unchanged constitution v0.2.0.
-**Date**: 2026-10-10 | **Branch**: main | **Status**: generated backlog; no implementation or live checks executed.
+**Date**: 2026-10-10 | **Branch**: main | **Status**: implementation in progress; completed tasks are checked; live acceptance pending.
 
 Tasks follow the template's Setup → Foundation → prioritized stories → Polish structure. Stories retain their original spec IDs; all P1 phases precede P2/P3 phases. Spec §3.4 and §1.6 explicitly require acceptance testing, so meaningful contract/fault/acceptance tasks are included. Write listed tests before their implementations, establish expected failures, then rerun at the phase checkpoint. Test authoring is distinct from the verification tasks that require them to pass.
 
@@ -16,11 +16,11 @@ Initialize package, locked runtime and deterministic fixtures.
 
 ### Implementation tasks
 
-- [ ] T001 Create CPython 3.12 package, three process entrypoints, CLI/config modules and planned directory layout in pyproject.toml and src/foundry_v2/__init__.py; keep eight role identities distinct. (NFR-003)
+- [X] T001 Create CPython 3.12 package, three process entrypoints, CLI/config modules and planned directory layout in pyproject.toml and src/foundry_v2/__init__.py; keep eight role identities distinct. (NFR-003)
 - [ ] T002 Resolve plan.md pins on Linux Python 3.12 into requirements.lock with hashes, install and smoke-test FastAPI/LangGraph/Ollama/tree-sitter/CVSS; record any necessary compatibility correction in specs/001-foundry/dependency-resolution.json before using it. (NFR-003)
 - [ ] T003 Build pinned Linux service/worker images and verify scanner archive checksums for OSV-Scanner 2.6.0 and Gitleaks 8.30.1 in deploy/images/Dockerfile and deploy/images/scanners.json; resolve immutable image digests. (NFR-003)
-- [ ] T004 Create pytest markers and seeded Python/Go, clean, adversarial, scanner and provider/GitHub fixture inventory in tests/conftest.py and tests/fixtures/manifest.json; distinguish live_cluster/live_model tests. (NFR-003)
-- [ ] T005 Configure deterministic unit/contract/integration CI and explicit opt-in live suites in .github/workflows/validate.yml; never embed credentials or claim skipped checks passed. (NFR-003)
+- [X] T004 Create pytest markers and seeded Python/Go, clean, adversarial, scanner and provider/GitHub fixture inventory in tests/conftest.py and tests/fixtures/manifest.json; distinguish live_cluster/live_model tests. (NFR-003)
+- [X] T005 Configure deterministic unit/contract/integration CI and explicit opt-in live suites in .github/workflows/validate.yml; never embed credentials or claim skipped checks passed. (NFR-003)
 
 **Checkpoint**: All phase verification tasks pass against stated fixtures; record live prerequisites/unexecuted evidence explicitly.
 
