@@ -1,0 +1,514 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: foundry-v2
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: v1.30
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: operator
+  namespace: foundry-v2
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+automountServiceAccountToken: false
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all
+  namespace: foundry-v2
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-config
+  namespace: foundry-v2
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+data:
+  service.json: "{\n  \"kubernetes_api_url\": \"https://kubernetes.default.svc:443\"\
+    ,\n  \"tokenreview_audience\": \"foundry-v2\",\n  \"operator_subjects\": [\n \
+    \   \"system:serviceaccount:foundry-v2:operator\"\n  ],\n  \"operator_groups\"\
+    : [],\n  \"stale_seconds\": 60,\n  \"release_limit\": 3,\n  \"reaper_seconds\"\
+    : 5,\n  \"transport\": \"http\",\n  \"substrate_url\": \"http://substrate.foundry-v2.svc:8080\"\
+    \n}"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: substrate-data
+  namespace: foundry-v2
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+spec:
+  accessModes:
+  - ReadWriteOnce
+  volumeMode: Filesystem
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 10Gi
+  volumeName: foundry-v2-substrate-local
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: foundry-v2-tokenreview
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+rules:
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: foundry-v2-tokenreview
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: foundry-v2-tokenreview
+subjects:
+- kind: ServiceAccount
+  name: orchestrator
+  namespace: foundry-v2
+- kind: ServiceAccount
+  name: substrate
+  namespace: foundry-v2
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: control-tokenreview
+  namespace: foundry-v2
+  labels: &id001
+    app.kubernetes.io/part-of: foundry-v2
+spec:
+  endpointSelector:
+    matchLabels: *id001
+  egress:
+  - toEntities:
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '443'
+        protocol: TCP
+      - port: '6443'
+        protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: control-dns
+  namespace: foundry-v2
+  labels: &id001
+    app.kubernetes.io/part-of: foundry-v2
+spec:
+  podSelector:
+    matchLabels: *id001
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: orchestrator-to-substrate
+  namespace: foundry-v2
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: orchestrator
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: substrate
+    ports:
+    - port: 8080
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: substrate-from-orchestrator
+  namespace: foundry-v2
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: substrate
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: orchestrator
+    ports:
+    - port: 8080
+      protocol: TCP
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: foundry-v2-substrate-local
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+  - ReadWriteOnce
+  volumeMode: Filesystem
+  storageClassName: local-storage
+  persistentVolumeReclaimPolicy: Retain
+  local:
+    path: /data/foundry-v2
+  claimRef:
+    namespace: foundry-v2
+    name: substrate-data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s0n1
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: substrate
+  namespace: foundry-v2
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: substrate
+  namespace: foundry-v2
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+spec:
+  selector:
+    app.kubernetes.io/part-of: foundry-v2
+    app.kubernetes.io/name: substrate
+  ports:
+  - name: web
+    port: 8080
+    targetPort: web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: substrate
+  namespace: foundry-v2
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels: &id001
+      app.kubernetes.io/part-of: foundry-v2
+      app.kubernetes.io/name: substrate
+  template:
+    metadata:
+      labels: *id001
+    spec:
+      serviceAccountName: substrate
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      imagePullSecrets:
+      - name: harbor-pull-secret
+      containers:
+      - name: substrate
+        image: harbor.mlinarik.com/mlinarik/foundry-v2@sha256:340ec21c6321c6962d9987ec586d8f02d5405dc5628e5122b63ac84a59dbbc61
+        imagePullPolicy: Always
+        command:
+        - python
+        - -m
+        - foundry_v2.substrate
+        ports:
+        - name: web
+          containerPort: 8080
+        env:
+        - name: FOUNDRY_SERVICE_CONFIG
+          value: /etc/foundry/service.json
+        - name: FOUNDRY_KUBERNETES_CA
+          value: /run/kubernetes-ca/ca.crt
+        - name: FOUNDRY_TOKENREVIEW_TOKEN_FILE
+          value: /run/tokenreview/token
+        - name: TMPDIR
+          value: /scratch
+        - name: HOME
+          value: /scratch
+        - name: FOUNDRY_DATA_DIR
+          value: /data
+        - name: FOUNDRY_INFRASTRUCTURE_TOKEN_FILE
+          value: /run/infrastructure/token
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        securityContext:
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: config
+          mountPath: /etc/foundry
+          readOnly: true
+        - name: kubernetes-ca
+          mountPath: /run/kubernetes-ca
+          readOnly: true
+        - name: tokenreview
+          mountPath: /run/tokenreview
+          readOnly: true
+        - name: scratch
+          mountPath: /scratch
+        - name: data
+          mountPath: /data
+        - name: infrastructure
+          mountPath: /run/infrastructure
+          readOnly: true
+        startupProbe:
+          httpGet:
+            path: /healthz
+            port: web
+            scheme: HTTP
+          periodSeconds: 5
+          failureThreshold: 24
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: web
+            scheme: HTTP
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: web
+            scheme: HTTP
+          periodSeconds: 5
+      volumes:
+      - name: config
+        configMap:
+          name: service-config
+          defaultMode: 292
+      - name: kubernetes-ca
+        configMap:
+          name: kube-root-ca.crt
+          defaultMode: 292
+      - name: tokenreview
+        projected:
+          defaultMode: 288
+          sources:
+          - serviceAccountToken:
+              path: token
+              expirationSeconds: 3600
+      - name: scratch
+        emptyDir:
+          sizeLimit: 256Mi
+      - name: data
+        persistentVolumeClaim:
+          claimName: substrate-data
+      - name: infrastructure
+        secret:
+          secretName: foundry-infrastructure
+          defaultMode: 288
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: orchestrator
+  namespace: foundry-v2
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orchestrator
+  namespace: foundry-v2
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+spec:
+  selector:
+    app.kubernetes.io/part-of: foundry-v2
+    app.kubernetes.io/name: orchestrator
+  ports:
+  - name: web
+    port: 8080
+    targetPort: web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orchestrator
+  namespace: foundry-v2
+  labels:
+    app.kubernetes.io/part-of: foundry-v2
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels: &id001
+      app.kubernetes.io/part-of: foundry-v2
+      app.kubernetes.io/name: orchestrator
+  template:
+    metadata:
+      labels: *id001
+    spec:
+      serviceAccountName: orchestrator
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      imagePullSecrets:
+      - name: harbor-pull-secret
+      containers:
+      - name: orchestrator
+        image: harbor.mlinarik.com/mlinarik/foundry-v2@sha256:340ec21c6321c6962d9987ec586d8f02d5405dc5628e5122b63ac84a59dbbc61
+        imagePullPolicy: Always
+        command:
+        - python
+        - -m
+        - foundry_v2.orchestrator
+        ports:
+        - name: web
+          containerPort: 8080
+        env:
+        - name: FOUNDRY_SERVICE_CONFIG
+          value: /etc/foundry/service.json
+        - name: FOUNDRY_KUBERNETES_CA
+          value: /run/kubernetes-ca/ca.crt
+        - name: FOUNDRY_TOKENREVIEW_TOKEN_FILE
+          value: /run/tokenreview/token
+        - name: TMPDIR
+          value: /scratch
+        - name: HOME
+          value: /scratch
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        securityContext:
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: config
+          mountPath: /etc/foundry
+          readOnly: true
+        - name: kubernetes-ca
+          mountPath: /run/kubernetes-ca
+          readOnly: true
+        - name: tokenreview
+          mountPath: /run/tokenreview
+          readOnly: true
+        - name: scratch
+          mountPath: /scratch
+        startupProbe:
+          httpGet:
+            path: /healthz
+            port: web
+            scheme: HTTP
+          periodSeconds: 5
+          failureThreshold: 24
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: web
+            scheme: HTTP
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: web
+            scheme: HTTP
+          periodSeconds: 5
+      volumes:
+      - name: config
+        configMap:
+          name: service-config
+          defaultMode: 292
+      - name: kubernetes-ca
+        configMap:
+          name: kube-root-ca.crt
+          defaultMode: 292
+      - name: tokenreview
+        projected:
+          defaultMode: 288
+          sources:
+          - serviceAccountToken:
+              path: token
+              expirationSeconds: 3600
+      - name: scratch
+        emptyDir:
+          sizeLimit: 256Mi

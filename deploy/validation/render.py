@@ -20,6 +20,9 @@ def render(image, revision, namespace='foundry-v2-validation'):
         raise ValueError('Invalid namespace name')
     root = Path(__file__).resolve().parents[2]
     files = [root/'tests/conftest.py',root/'pyproject.toml',root/'specs/001-foundry/contracts/openapi.json']
+    # Deployment contract tests inspect the renderer as part of the mounted repository.
+    if (root/'deploy/services/render.py').is_file():
+        files.append(root/'deploy/services/render.py')
     for directory in ('unit','contract','integration'):
         files.extend(sorted((root/'tests'/directory).glob('test_*.py')))
     data = {f'file-{index}':file.read_text(encoding='utf-8') for index,file in enumerate(files)}

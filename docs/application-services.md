@@ -51,3 +51,5 @@ kubectl create token operator -n foundry-v2 --audience=foundry-v2 --duration=15m
 ```
 
 Open http://127.0.0.1:8080 and paste the token into the dashboard. The token is not saved to disk or browser storage. No public ingress, DNS record or model workload is installed.
+
+Deployment evidence: `deploy/services/live-results.json` records service readiness, TokenReview positive/negative checks, restart persistence, owner lock and read-only mount checks. All 53 structural tests passed both in the restricted local Linux container and in the isolated Kubernetes validation Job; its output is `deploy/services/kubernetes-test-results.txt`. The two running services use the immutable image recorded in `deploy/images/published-services.json`.

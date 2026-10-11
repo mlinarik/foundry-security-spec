@@ -15,7 +15,7 @@ def render(image,node,namespace='foundry-v2-storage-setup'):
              'imagePullSecrets':[{'name':'harbor-pull-secret'}],
              'securityContext':{'runAsUser':0,'seccompProfile':{'type':'RuntimeDefault'}},
              'containers':[{'name':'prepare','image':image,'command':['python','-c',
-                 "import os; p='/volume'; assert not os.listdir(p), 'Foundry directory must be empty for initial provisioning'; s=os.statvfs(p); assert s.f_bavail*s.f_frsize>=10*1024**3, 'Insufficient local disk'; os.chown(p,10001,10001); os.chmod(p,0o700); f=os.open(p,os.O_RDONLY|os.O_DIRECTORY); os.fsync(f); os.close(f); print('Dedicated local directory initialized; owner 10001; mode 0700; free disk >=10Gi')"],
+                 "import os; p='/volume'; assert not os.listdir(p), 'Foundry directory must be empty for initial provisioning'; s=os.statvfs(p); assert s.f_bavail*s.f_frsize>=10*1024**3, 'Insufficient local disk'; f=os.open(p,os.O_RDONLY|os.O_DIRECTORY); os.fchown(f,0,0); os.fchmod(f,0o700); os.fchown(f,10001,10001); os.fsync(f); os.close(f); print('Dedicated local directory initialized; owner 10001; mode 0700; free disk >=10Gi')"],
                  'resources':{'requests':{'cpu':'50m','memory':'32Mi'},'limits':{'cpu':'250m','memory':'128Mi'}},
                  'securityContext':{'allowPrivilegeEscalation':False,'readOnlyRootFilesystem':True,
                                      'capabilities':{'drop':['ALL'],'add':['CHOWN']}},

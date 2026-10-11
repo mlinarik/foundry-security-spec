@@ -1,0 +1,59 @@
+{
+  "observed_at": "2026-10-11T21:17:06.135060+00:00",
+  "namespace": "foundry-v2",
+  "checks": {
+    "orchestrator_ready": true,
+    "dashboard_served": true,
+    "anonymous_rejected": true,
+    "operator_authenticated": true,
+    "nonoperator_rejected": true,
+    "wrong_audience_rejected": true,
+    "no_evaluation_created": true,
+    "incomplete_evaluation_blocked": true,
+    "substrate_ready": true,
+    "substrate_anonymous_rejected": true,
+    "substrate_operator_authenticated": true,
+    "restart_persists_installation": true,
+    "restart_advances_owner_epoch": true,
+    "single_owner_lock": true,
+    "production_uid_10001": true,
+    "readonly_root_and_config": true,
+    "controller_cannot_create_jobs": true,
+    "tokenreview_permission_only": true,
+    "maintenance_namespace_removed": true
+  },
+  "deployments": {
+    "orchestrator": {
+      "ready_replicas": 1,
+      "image": "harbor.mlinarik.com/mlinarik/foundry-v2@sha256:340ec21c6321c6962d9987ec586d8f02d5405dc5628e5122b63ac84a59dbbc61"
+    },
+    "substrate": {
+      "ready_replicas": 1,
+      "image": "harbor.mlinarik.com/mlinarik/foundry-v2@sha256:340ec21c6321c6962d9987ec586d8f02d5405dc5628e5122b63ac84a59dbbc61"
+    }
+  },
+  "pods": [
+    {
+      "name": "orchestrator-79fb5fdb76-sxxmz",
+      "node": "k8s0n1",
+      "phase": "Running",
+      "image_id": "harbor.mlinarik.com/mlinarik/foundry-v2@sha256:340ec21c6321c6962d9987ec586d8f02d5405dc5628e5122b63ac84a59dbbc61"
+    },
+    {
+      "name": "substrate-6cddcdc7c6-gtdm4",
+      "node": "k8s0n1",
+      "phase": "Running",
+      "image_id": "harbor.mlinarik.com/mlinarik/foundry-v2@sha256:340ec21c6321c6962d9987ec586d8f02d5405dc5628e5122b63ac84a59dbbc61"
+    }
+  ],
+  "scope": "Foundation application services; no evaluation workers or model calls",
+  "operator_overrides": {
+    "transport": "private HTTP",
+    "storage": "node-local RWO; no CSI RWOP claim"
+  },
+  "kubernetes_test_job": {
+    "namespace": "foundry-v2-validation",
+    "job": "foundry-v2-foundation-28cc6a0ce039",
+    "passed_tests": 53
+  }
+}
