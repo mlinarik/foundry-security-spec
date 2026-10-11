@@ -58,11 +58,12 @@
   },
   "metallb": {
     "ip": "10.2.0.165",
-    "url": "http://10.2.0.165:8080",
+    "url": "http://10.2.0.165",
     "pool": "prod-pool",
     "dashboard": 200,
     "ready": 200,
     "anonymous_api": 401,
-    "operator_api": 200
+    "operator_api": 200,
+    "service_port": 80
   }
 }

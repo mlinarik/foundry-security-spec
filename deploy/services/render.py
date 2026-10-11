@@ -110,7 +110,7 @@ def render(image, config):
         pod_labels=dict(labels,**{'app.kubernetes.io/name':name})
         objects.append({'apiVersion':'v1','kind':'ServiceAccount','metadata':meta(name),'automountServiceAccountToken':False})
         objects.append({'apiVersion':'v1','kind':'Service','metadata':meta(name),
-                        'spec':{'selector':pod_labels,'ports':[{'name':'web','port':port,'targetPort':'web'}]}})
+                        'spec':{'selector':pod_labels,'ports':[{'name':'web','port':(80 if config['transport']=='http' else 443) if name=='orchestrator' and service_type=='LoadBalancer' else port,'targetPort':'web'}]}})
         if name=='orchestrator' and service_type=='LoadBalancer':
             objects[-1]['spec'].update(type='LoadBalancer',externalTrafficPolicy='Local',allocateLoadBalancerNodePorts=False)
         volumes=[{'name':'config','configMap':{'name':'service-config','defaultMode':0o444}},

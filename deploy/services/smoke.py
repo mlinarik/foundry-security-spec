@@ -18,7 +18,8 @@ def kubectl(*args):
 def forward(namespace, service):
     with socket.socket() as sock:
         sock.bind(('127.0.0.1',0)); port=sock.getsockname()[1]
-    process=subprocess.Popen(['kubectl','port-forward','-n',namespace,'service/'+service,f'{port}:8080','--address','127.0.0.1'],
+    service_port=json.loads(kubectl('get','service',service,'-n',namespace,'-o','json'))['spec']['ports'][0]['port']
+    process=subprocess.Popen(['kubectl','port-forward','-n',namespace,'service/'+service,f'{port}:{service_port}','--address','127.0.0.1'],
                              stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     try:
         with httpx.Client(base_url=f'http://127.0.0.1:{port}',timeout=15,trust_env=False) as client:

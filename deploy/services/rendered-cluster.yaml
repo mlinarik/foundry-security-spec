@@ -410,7 +410,7 @@ spec:
     app.kubernetes.io/name: orchestrator
   ports:
   - name: web
-    port: 8080
+    port: 80
     targetPort: web
   type: LoadBalancer
   externalTrafficPolicy: Local
