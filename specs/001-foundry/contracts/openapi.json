@@ -1,0 +1,3750 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Foundry-v2 operator and substrate API",
+    "version": "0.1.0",
+    "description": "Design contract. Not yet implemented. Every mutation is idempotent; role/session/claim authorization is enforced server-side."
+  },
+  "servers": [
+    {
+      "url": "https://foundry.example.invalid"
+    }
+  ],
+  "paths": {
+    "/v1/evaluations": {
+      "post": {
+        "operationId": "startEvaluation",
+        "description": "Validate full configuration schema; atomically reserve one active evaluation; preflight/indexing are asynchronous. Conflicting start returns 409.",
+        "security": [
+          {
+            "OperatorBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartEvaluation"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evaluations/{evaluation_id}/status": {
+      "get": {
+        "operationId": "getStatus",
+        "description": "getStatus",
+        "security": [
+          {
+            "OperatorBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Snapshot"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evaluations/{evaluation_id}/control": {
+      "post": {
+        "operationId": "controlEvaluation",
+        "description": "controlEvaluation",
+        "security": [
+          {
+            "OperatorBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Control"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evaluations/{evaluation_id}/configuration": {
+      "put": {
+        "operationId": "updateConfiguration",
+        "description": "updateConfiguration",
+        "security": [
+          {
+            "OperatorBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfigUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evaluations/{evaluation_id}/questions": {
+      "post": {
+        "operationId": "askQuestion",
+        "description": "askQuestion",
+        "security": [
+          {
+            "OperatorBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperatorQuery"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evaluations/{evaluation_id}/tasks": {
+      "post": {
+        "operationId": "queueTask",
+        "description": "queueTask",
+        "security": [
+          {
+            "OperatorBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskCreate"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listTasks",
+        "description": "listTasks",
+        "security": [
+          {
+            "OperatorBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evaluations/{evaluation_id}/tasks/{task_id}": {
+      "patch": {
+        "operationId": "editTask",
+        "description": "editTask",
+        "security": [
+          {
+            "OperatorBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evaluations/{evaluation_id}/steering": {
+      "post": {
+        "operationId": "steerWorker",
+        "description": "steerWorker",
+        "security": [
+          {
+            "OperatorBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Steer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evaluations/{evaluation_id}/overrides": {
+      "post": {
+        "operationId": "recordOverride",
+        "description": "recordOverride",
+        "security": [
+          {
+            "OperatorBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Override"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evaluations/{evaluation_id}/findings": {
+      "get": {
+        "operationId": "listFindings",
+        "description": "listFindings",
+        "security": [
+          {
+            "OperatorBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evaluations/{evaluation_id}/messages/{message_id}/ack": {
+      "post": {
+        "operationId": "ackMessage",
+        "description": "ackMessage",
+        "security": [
+          {
+            "OperatorBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "message_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ack"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evaluations/{evaluation_id}/events": {
+      "get": {
+        "operationId": "streamEvents",
+        "description": "SSE stream; durable event id and Last-Event-ID reconnect; return 409 refresh_required on cursor retention gap.",
+        "security": [
+          {
+            "OperatorBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "Last-Event-ID",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/sessions": {
+      "post": {
+        "operationId": "registerSession",
+        "description": "registerSession",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionRegistration"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/sessions/heartbeat": {
+      "post": {
+        "operationId": "heartbeat",
+        "description": "heartbeat",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Heartbeat"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/snapshot": {
+      "get": {
+        "operationId": "readSubstrateSnapshot",
+        "description": "readSubstrateSnapshot",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Snapshot"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/tasks": {
+      "post": {
+        "operationId": "submitTask",
+        "description": "submitTask",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskCreate"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "readTasks",
+        "description": "readTasks",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/tasks/{task_id}": {
+      "patch": {
+        "operationId": "updateTask",
+        "description": "updateTask",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/claims": {
+      "post": {
+        "operationId": "claimWork",
+        "description": "claimWork",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Claim"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No eligible work; no claim acquired"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClaimRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/claims/{resource_id}": {
+      "patch": {
+        "operationId": "writeClaimedWork",
+        "description": "writeClaimedWork",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "resource_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClaimWrite"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/findings": {
+      "post": {
+        "operationId": "submitCandidate",
+        "description": "submitCandidate",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Candidate"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "readFindings",
+        "description": "readFindings",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/findings/{finding_id}/verdict": {
+      "put": {
+        "operationId": "assignVerdict",
+        "description": "assignVerdict",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "finding_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerdictWrite"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/findings/{finding_id}/validation": {
+      "post": {
+        "operationId": "recordValidation",
+        "description": "recordValidation",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "finding_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidationWrite"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/findings/{finding_id}/reports": {
+      "post": {
+        "operationId": "commitReport",
+        "description": "commitReport",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "finding_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportWrite"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/generations": {
+      "get": {
+        "operationId": "readGenerations",
+        "description": "readGenerations",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "commitGeneration",
+        "description": "commitGeneration",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerationWrite"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/index/query": {
+      "post": {
+        "operationId": "queryIndex",
+        "description": "queryIndex",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndexQuery"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/coverage": {
+      "put": {
+        "operationId": "writeCoverage",
+        "description": "writeCoverage",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CoverageWrite"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/messages": {
+      "post": {
+        "operationId": "postMessage",
+        "description": "postMessage",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Message"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/model-calls": {
+      "post": {
+        "operationId": "recordModelCall",
+        "description": "recordModelCall",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModelCall"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/provider-backpressure": {
+      "post": {
+        "operationId": "observeBackpressure",
+        "description": "observeBackpressure",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Backpressure"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/publication-intents": {
+      "post": {
+        "operationId": "requestPublication",
+        "description": "requestPublication",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Publish"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/checkpoints/{thread_id}/{namespace}": {
+      "get": {
+        "operationId": "listCheckpoints",
+        "description": "listCheckpoints",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteCheckpointThread",
+        "description": "deleteCheckpointThread",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/checkpoints/{thread_id}/{namespace}/{checkpoint_id}": {
+      "get": {
+        "operationId": "getCheckpoint",
+        "description": "getCheckpoint",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "checkpoint_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Checkpoint"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "putCheckpoint",
+        "description": "putCheckpoint",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "checkpoint_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Checkpoint"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/checkpoints/{thread_id}/{namespace}/{checkpoint_id}/writes": {
+      "put": {
+        "operationId": "putCheckpointWrites",
+        "description": "putCheckpointWrites",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "checkpoint_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckpointWrites"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/substrate/v1/evaluations/{evaluation_id}/blobs/{digest}": {
+      "put": {
+        "operationId": "writeBlob",
+        "description": "Immutable content-addressed upload; digest is verified. Only committed metadata makes blob visible.",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "digest",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "readBlob",
+        "description": "readBlob",
+        "security": [
+          {
+            "AgentBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "digest",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Actionable error; see runtime.md for status semantics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "request_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "request_id"
+        ]
+      },
+      "Receipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resource_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "state": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "request_id",
+          "resource_id",
+          "version"
+        ]
+      },
+      "Snapshot": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "snapshot_id": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "evaluation_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "state": {
+            "type": "string",
+            "minLength": 1
+          },
+          "agents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "counts": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "coverage": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "budget": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "degraded": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "snapshot_id",
+          "evaluation_id",
+          "state",
+          "agents",
+          "counts",
+          "coverage",
+          "budget",
+          "degraded"
+        ]
+      },
+      "Page": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "snapshot_id": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "snapshot_id"
+        ]
+      },
+      "StartEvaluation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "configuration": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "expected_installation_version": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "configuration",
+          "expected_installation_version"
+        ]
+      },
+      "Control": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "drain",
+              "stop",
+              "resume"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "expected_version"
+        ]
+      },
+      "ConfigUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "configuration": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "configuration",
+          "expected_version"
+        ]
+      },
+      "OperatorQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "question": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "question"
+        ]
+      },
+      "TaskCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "orchestrator",
+              "indexer",
+              "cartographer",
+              "detector",
+              "triager",
+              "validator",
+              "reporter",
+              "coverage-guide"
+            ]
+          },
+          "target_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "role",
+          "title",
+          "description",
+          "priority"
+        ]
+      },
+      "TaskUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "blocked",
+              "closed"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "expected_version"
+        ]
+      },
+      "Steer": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "orchestrator",
+              "indexer",
+              "cartographer",
+              "detector",
+              "triager",
+              "validator",
+              "reporter",
+              "coverage-guide"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "idle",
+              "interrupt"
+            ]
+          }
+        },
+        "required": [
+          "message",
+          "mode"
+        ]
+      },
+      "Override": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "resource_type": {
+            "type": "string",
+            "enum": [
+              "finding",
+              "coverage",
+              "stop"
+            ]
+          },
+          "resource_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "decision": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "resource_type",
+          "resource_id",
+          "decision",
+          "reason",
+          "expected_version"
+        ]
+      },
+      "Ack": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reply": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "expected_version"
+        ]
+      },
+      "Heartbeat": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "incarnation": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "last_event_sequence": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "session_id",
+          "incarnation",
+          "last_event_sequence"
+        ]
+      },
+      "ClaimRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "resource_type": {
+            "type": "string",
+            "enum": [
+              "task",
+              "finding"
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "orchestrator",
+              "indexer",
+              "cartographer",
+              "detector",
+              "triager",
+              "validator",
+              "reporter",
+              "coverage-guide"
+            ]
+          }
+        },
+        "required": [
+          "resource_type",
+          "role"
+        ]
+      },
+      "Claim": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resource_type": {
+            "type": "string",
+            "enum": [
+              "task",
+              "finding"
+            ]
+          },
+          "session_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "generation": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "owner_epoch": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "resource_id",
+          "resource_type",
+          "session_id",
+          "generation",
+          "owner_epoch",
+          "payload"
+        ]
+      },
+      "ClaimWrite": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "claim_generation": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "release",
+              "update"
+            ]
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "claim_generation",
+          "expected_version",
+          "operation",
+          "payload"
+        ]
+      },
+      "Candidate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "target_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "symbol": {
+            "type": "string",
+            "minLength": 1
+          },
+          "weakness_key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "technique": {
+            "type": "string",
+            "enum": [
+              "rule",
+              "dependency",
+              "secret",
+              "exploratory"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_revision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "corpus_revision": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "target_id",
+          "path",
+          "symbol",
+          "weakness_key",
+          "technique",
+          "description",
+          "source_revision"
+        ]
+      },
+      "VerdictWrite": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "claim_generation": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "true-positive",
+              "false-positive",
+              "needs-review",
+              "not-applicable",
+              "code-quality"
+            ]
+          },
+          "evidence": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "reasoning_digest": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "claim_generation",
+          "expected_version",
+          "verdict",
+          "evidence",
+          "reasoning_digest"
+        ]
+      },
+      "ValidationWrite": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "claim_generation": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "artifact_digest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "success",
+              "failed",
+              "partial",
+              "no_testbed",
+              "prohibited"
+            ]
+          },
+          "observed_impact": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "author_session_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reproduction_session_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "claim_generation",
+          "expected_version",
+          "result",
+          "reason",
+          "author_session_id",
+          "reproduction_session_id"
+        ]
+      },
+      "GenerationWrite": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "index",
+              "architecture",
+              "attack_surface",
+              "trust_boundaries",
+              "data_flow",
+              "auth_model",
+              "threat_model",
+              "coverage",
+              "notes"
+            ]
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "content": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "blob_digests": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "kind",
+          "expected_version",
+          "content",
+          "blob_digests"
+        ]
+      },
+      "IndexQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "target_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "generation_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "list-functions",
+              "function-body",
+              "callers",
+              "callees",
+              "find-symbol",
+              "full-text"
+            ]
+          },
+          "arguments": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "target_id",
+          "generation_id",
+          "operation",
+          "arguments"
+        ]
+      },
+      "CoverageWrite": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "goals_revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "complete": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "goals_revision",
+          "expected_version",
+          "items",
+          "complete"
+        ]
+      },
+      "Message": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "blocker",
+              "request",
+              "feedback",
+              "info"
+            ]
+          },
+          "dedup_key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "kind",
+          "dedup_key",
+          "body"
+        ]
+      },
+      "ModelCall": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "call_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "reserve",
+              "complete",
+              "interrupted"
+            ]
+          },
+          "model_tag": {
+            "type": "string",
+            "minLength": 1
+          },
+          "model_digest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "prompt_tokens": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "output_tokens": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "usage_status": {
+            "type": "string",
+            "enum": [
+              "known",
+              "estimated",
+              "unknown"
+            ]
+          }
+        },
+        "required": [
+          "call_id",
+          "phase",
+          "model_tag",
+          "usage_status"
+        ]
+      },
+      "Backpressure": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "provider_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "http_status": {
+            "type": "integer",
+            "enum": [
+              429,
+              503
+            ]
+          },
+          "retry_after_seconds": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "required": [
+          "provider_id",
+          "http_status"
+        ]
+      },
+      "Publish": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "finding_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "report_revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "finding_id",
+          "report_revision",
+          "expected_version"
+        ]
+      },
+      "Checkpoint": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "checkpoint_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "parent_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "channel_values": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "channel_versions": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "versions_seen": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "pending_writes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "codec_version": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "checkpoint_id",
+          "parent_id",
+          "channel_values",
+          "channel_versions",
+          "versions_seen",
+          "metadata",
+          "pending_writes",
+          "codec_version"
+        ]
+      },
+      "CheckpointWrites": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "task_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "writes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "write_index": {
+                  "type": "integer"
+                },
+                "channel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "value": {}
+              },
+              "required": [
+                "write_index",
+                "channel",
+                "value"
+              ]
+            }
+          }
+        },
+        "required": [
+          "task_id",
+          "task_path",
+          "writes"
+        ]
+      },
+      "SessionRegistration": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "orchestrator",
+              "indexer",
+              "cartographer",
+              "detector",
+              "triager",
+              "validator",
+              "reporter",
+              "coverage-guide"
+            ]
+          },
+          "slot": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "incarnation": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pod_name": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "session_id",
+          "role",
+          "slot",
+          "incarnation",
+          "pod_name"
+        ]
+      },
+      "ReportWrite": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "claim_generation": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "content_digest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "cwe_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "cvss_vector": {
+            "type": "string",
+            "minLength": 1
+          },
+          "cvss_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10
+          }
+        },
+        "required": [
+          "claim_generation",
+          "expected_version",
+          "content_digest",
+          "cwe_id",
+          "cvss_vector",
+          "cvss_score"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "OperatorBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Kubernetes operator token"
+      },
+      "AgentBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "scoped session token"
+      }
+    }
+  }
+}

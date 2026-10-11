@@ -56,3 +56,9 @@ Example of AGENTS.md file at The Apache Software Foundation org: [https://github
 ## Contribution conventions
 
 - **Backward compatibility**: Do not change existing sample behavior unless clearly improving or fixing a bug; document changes.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+at specs/001-foundry/plan.md
+<!-- SPECKIT END -->
