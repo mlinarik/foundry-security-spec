@@ -47,7 +47,7 @@ def test_newer_schema_refusal_does_not_strand_owner_lock(tmp_path):
     with pytest.raises(Unavailable,match='unsupported_schema'):
         Owner(root)
     with closing(sqlite3.connect(root/'state.sqlite')) as db:
-        db.execute('PRAGMA user_version=1')
+        db.execute('PRAGMA user_version=2')
     with Owner(root):
         pass
 

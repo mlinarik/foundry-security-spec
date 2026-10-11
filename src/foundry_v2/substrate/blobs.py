@@ -65,15 +65,18 @@ class BlobStore:
         return digest
 
     def read(self,digest):
-        path = self.path(digest)
         with self.owner.transaction() as db:
-            row = db.execute('SELECT byte_length FROM blobs WHERE digest=?',(digest,)).fetchone()
-            if row is None:
-                raise KeyError(digest)
-            data = path.read_bytes()
-            if len(data)!=row['byte_length'] or hashlib.sha256(data).hexdigest()!=digest:
-                raise ValueError('Committed artifact digest mismatch')
-            return data
+            return self.read_in_transaction(db,digest)
+
+    def read_in_transaction(self,db,digest):
+        path=self.path(digest)
+        row = db.execute('SELECT byte_length FROM blobs WHERE digest=?',(digest,)).fetchone()
+        if row is None:
+            raise KeyError(digest)
+        data = path.read_bytes()
+        if len(data)!=row['byte_length'] or hashlib.sha256(data).hexdigest()!=digest:
+            raise ValueError('Committed artifact digest mismatch')
+        return data
 
     def orphan_inventory(self):
         """Report invisible leftovers; never guess retention or delete provenance."""

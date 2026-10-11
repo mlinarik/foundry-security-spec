@@ -6,7 +6,7 @@ import time
 
 from foundry_v2.contracts.models import Unavailable
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 
 def migrate(connection, root):
@@ -20,10 +20,15 @@ def migrate(connection, root):
         backup_path = root / f'pre-migration-{time.time_ns()}.sqlite'
         with closing(sqlite3.connect(backup_path)) as destination:
             connection.backup(destination)
-    script = files('foundry_v2.substrate').joinpath('migrations/001_initial.sql').read_text(encoding='utf-8')
-    try:
-        connection.executescript('BEGIN IMMEDIATE;\n'+script+'\nPRAGMA user_version=1;\nCOMMIT;')
-    except BaseException:
-        if connection.in_transaction:
-            connection.rollback()
-        raise
+    for version in range(current+1,SCHEMA_VERSION+1):
+        directory=files('foundry_v2.substrate').joinpath('migrations')
+        candidates=[entry for entry in directory.iterdir() if entry.name.startswith(f'{version:03}_') and entry.name.endswith('.sql')]
+        if len(candidates)!=1:
+            raise Unavailable('migration_missing')
+        script=candidates[0].read_text(encoding='utf-8')
+        try:
+            connection.executescript('BEGIN IMMEDIATE;\n'+script+f'\nPRAGMA user_version={version};\nCOMMIT;')
+        except BaseException:
+            if connection.in_transaction:
+                connection.rollback()
+            raise

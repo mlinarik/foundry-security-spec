@@ -30,8 +30,8 @@ Blocking shared persistence, identity, liveness and contracts. All stories requi
 
 ### Test tasks
 
-- [ ] T006 [P] Write single-owner/start-race, claim-race/late-generation, queue auto-block/stable-ID/reprioritization, CAS/idempotency, role/evaluation isolation and transaction crash tests in tests/integration/test_substrate_foundation.py using data-model.md and runtime.md. (FR-097, FR-098, FR-099, FR-100, FR-103, FR-117, FR-136, FR-138, NFR-007)
-- [ ] T007 [P] Write checkpoint pending-write/resume/namespace/unsafe-codec and blob fault tests in tests/contract/test_checkpoint_contract.py against a test-only reference saver. (FR-117, NFR-001, NFR-002)
+- [X] T006 [P] Write single-owner/start-race, claim-race/late-generation, queue auto-block/stable-ID/reprioritization, CAS/idempotency, role/evaluation isolation and transaction crash tests in tests/integration/test_substrate_foundation.py using data-model.md and runtime.md. (FR-097, FR-098, FR-099, FR-100, FR-103, FR-117, FR-136, FR-138, NFR-007)
+- [X] T007 [P] Write checkpoint pending-write/resume/namespace/unsafe-codec and blob fault tests in tests/contract/test_checkpoint_contract.py against a test-only reference saver. (FR-117, NFR-001, NFR-002)
 ### Implementation tasks
 
 - [X] T008 Define shared strict DTOs, stable IDs and contract errors from contracts/openapi.json in src/foundry_v2/contracts/models.py; preserve all 41 operation IDs and role identities. (NFR-003)
@@ -40,17 +40,17 @@ Blocking shared persistence, identity, liveness and contracts. All stories requi
 - [X] T011 Implement actor-scoped idempotency receipt plus mutation transactions, CAS conflicts, cursor lists and safe error responses in src/foundry_v2/substrate/transactions.py. (FR-117, NFR-002, NFR-007)
 - [X] T012 Implement immutable SHA-256 staging/fsync/rename, committed visibility, safe orphan handling and backup/restore manifest verification in src/foundry_v2/substrate/blobs.py and src/foundry_v2/substrate/backup.py. (FR-117, NFR-001, NFR-007)
 - [X] T013 Implement TokenReview operator allowlist and hashed expiring role/evaluation/session substrate tokens, revocation and separate infrastructure registration authority in src/foundry_v2/api/auth.py and src/foundry_v2/substrate/auth.py. (FR-136, NFR-009)
-- [ ] T014 Implement substrate HTTP client and foundation endpoints for session registration, snapshot, blobs and generation reads in src/foundry_v2/substrate/app.py and src/foundry_v2/workers/client.py; fail closed during unknown ownership. (FR-117, FR-136, FR-138, NFR-004)
-- [ ] T015 Implement owner checkpoint tuple/pending-write endpoints and controlled typed codec in src/foundry_v2/substrate/checkpoints.py; restrict fresh reproducer access to its own thread. (FR-117, NFR-001)
-- [ ] T016 Implement asynchronous BaseCheckpointSaver methods and pinned-version serialization/versioning conformance in src/foundry_v2/checkpoints/http_saver.py; encode empty namespace as _root and preserve parent/pending writes. (NFR-001, NFR-002)
-- [ ] T017 Implement append-only sequenced events, redacted transcript chunks, explicit persistence-failure events and complete generation pointer swaps in src/foundry_v2/substrate/audit.py. (FR-117, FR-141, NFR-006, NFR-007)
-- [ ] T018 Implement stable-ID named queues, atomic task/finding/file claims, generation fences, CAS writes and configurable release-count auto-block in src/foundry_v2/substrate/claims.py and src/foundry_v2/substrate/tasks.py. (FR-097, FR-098, FR-099, FR-100, FR-101, FR-103)
-- [ ] T019 Implement receipt-clock heartbeats, stale-only reaper and restart grace in src/foundry_v2/substrate/liveness.py; neither rotation nor slow calls reclaims healthy claims. (FR-006, FR-099, FR-104)
-- [ ] T020 Implement independent heartbeat sender, graph checkpoint handoff, secret-free tool execution boundary and advisory/operator origins in src/foundry_v2/workers/runtime.py and src/foundry_v2/workers/heartbeat.py. (FR-003, FR-104, FR-105, NFR-001, NFR-009)
-- [ ] T021 Define injection interfaces for provider/index/substrate/publisher/deployment/clock and a fixed eight-role graph registry in src/foundry_v2/integrations/ports.py and src/foundry_v2/roles/registry.py; use deterministic fakes until each story binding is ready. (FR-013, NFR-003)
+- [X] T014 Implement substrate HTTP client and foundation endpoints for session registration, snapshot, blobs and generation reads in src/foundry_v2/substrate/app.py and src/foundry_v2/workers/client.py; fail closed during unknown ownership. (FR-117, FR-136, FR-138, NFR-004)
+- [X] T015 Implement owner checkpoint tuple/pending-write endpoints and controlled typed codec in src/foundry_v2/substrate/checkpoints.py; restrict fresh reproducer access to its own thread. (FR-117, NFR-001)
+- [X] T016 Implement asynchronous BaseCheckpointSaver methods and pinned-version serialization/versioning conformance in src/foundry_v2/checkpoints/http_saver.py; encode empty namespace as _root and preserve parent/pending writes. (NFR-001, NFR-002)
+- [X] T017 Implement append-only sequenced events, redacted transcript chunks, explicit persistence-failure events and complete generation pointer swaps in src/foundry_v2/substrate/audit.py. (FR-117, FR-141, NFR-006, NFR-007)
+- [X] T018 Implement stable-ID named queues, atomic task/finding/file claims, generation fences, CAS writes and configurable release-count auto-block in src/foundry_v2/substrate/claims.py and src/foundry_v2/substrate/tasks.py. (FR-097, FR-098, FR-099, FR-100, FR-101, FR-103)
+- [X] T019 Implement receipt-clock heartbeats, stale-only reaper and restart grace in src/foundry_v2/substrate/liveness.py; neither rotation nor slow calls reclaims healthy claims. (FR-006, FR-099, FR-104)
+- [X] T020 Implement independent heartbeat sender, graph checkpoint handoff, secret-free tool execution boundary and advisory/operator origins in src/foundry_v2/workers/runtime.py and src/foundry_v2/workers/heartbeat.py. (FR-003, FR-104, FR-105, NFR-001, NFR-009)
+- [X] T021 Define injection interfaces for provider/index/substrate/publisher/deployment/clock and a fixed eight-role graph registry in src/foundry_v2/integrations/ports.py and src/foundry_v2/roles/registry.py; use deterministic fakes until each story binding is ready. (FR-013, NFR-003)
 ### Verification tasks
 
-- [ ] T022 Run foundation fault/race/auth/checkpoint suites and capture failures and recovery assertions in tests/integration/test_substrate_foundation.py; foundation blocks every story until passed. (FR-117, FR-136, FR-138, NFR-001, NFR-007)
+- [X] T022 Run foundation fault/race/auth/checkpoint suites and capture failures and recovery assertions in tests/integration/test_substrate_foundation.py; foundation blocks every story until passed. (FR-117, FR-136, FR-138, NFR-001, NFR-007)
 
 **Checkpoint**: All phase verification tasks pass against stated fixtures; record live prerequisites/unexecuted evidence explicitly.
 

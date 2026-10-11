@@ -75,3 +75,35 @@ def test_restart_grace_and_heartbeat_replay_do_not_extend_liveness(queue):
     now[0]=132
     q.heartbeat(workers[0],0,'once')
     assert q.reap()==2
+
+
+@pytest.mark.parametrize('kind',['finding','file'])
+def test_resource_claims_share_race_fence_and_auto_block(queue,kind):
+    q,evaluation,workers,now=queue
+    with q.owner.transaction() as db:
+        q.enqueue_resource(db,evaluation,kind,'r','detector','directed',{'path':'source.py'})
+    def acquire(worker):
+        try: return q.claim(worker,kind,'directed',worker.subject)
+        except Conflict: return None
+    with ThreadPoolExecutor(2) as pool: results=list(pool.map(acquire,workers))
+    assert sum(r is not None for r in results)==1
+    claim=next(r for r in results if r)
+    worker=next(w for w in workers if w.session_id==claim['session_id'])
+    q.write(worker,'r',claim['generation'],0,'release',{},'release')
+    with pytest.raises(Conflict):
+        q.write(worker,'r',claim['generation'],1,'complete',{},'late')
+    held=q.claim(worker,kind,'directed','again')
+    q.write(worker,'r',held['generation'],1,'release',{},'release-again')
+    with pytest.raises(Conflict): q.claim(worker,kind,'directed','blocked')
+
+
+def test_named_queues_do_not_cross_claim_order(queue):
+    from foundry_v2.substrate.tasks import Tasks
+    q,evaluation,workers,now=queue
+    queue_a,queue_b=Tasks(q,'a'),Tasks(q,'b')
+    operator=Principal('alice','operator')
+    payload={'role':'detector','title':'test','description':'test','priority':0}
+    a=queue_a.add(operator,evaluation,payload,'a')
+    b=queue_b.add(operator,evaluation,payload,'b')
+    assert queue_b.claim(workers[0],'claim-b')['resource_id']==b['resource_id']
+    assert queue_a.claim(workers[1],'claim-a')['resource_id']==a['resource_id']

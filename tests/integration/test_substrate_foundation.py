@@ -34,7 +34,7 @@ def test_database_pragmas_and_required_tables(owner):
         assert db.execute("PRAGMA journal_mode").fetchone()[0] == "wal"
         assert db.execute("PRAGMA synchronous").fetchone()[0] == 2
         assert db.execute("PRAGMA foreign_keys").fetchone()[0] == 1
-        assert db.execute("PRAGMA user_version").fetchone()[0] == 1
+        assert db.execute("PRAGMA user_version").fetchone()[0] == 2
         tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     required = {'installations', 'evaluations', 'targets', 'evaluation_targets', 'config_revisions',
                 'sessions', 'tasks', 'claims', 'findings', 'finding_observations', 'evidence',
