@@ -1,0 +1,27 @@
+{
+  "phase": "Setup + Foundation",
+  "linux_restricted_container_tests": 67,
+  "network": "none (loopback-only heartbeat fixture)",
+  "read_only_root": true,
+  "capabilities": "ALL dropped",
+  "coverage": [
+    "owner/start/claim races",
+    "task/finding/file generation fences and auto-block",
+    "role/evaluation/blob/thread isolation",
+    "LangGraph reference resume after failed node and pending-write conformance",
+    "nested namespaces/list/delete",
+    "safe serializer rejection",
+    "WAL kill/restart and backups",
+    "schema-one migration backup",
+    "independent heartbeat process during CPU work",
+    "atomic generation rollback",
+    "transcript redaction/receipts"
+  ],
+  "unexecuted": [
+    "complete live worker lifecycle",
+    "model quality",
+    "reporting/testbed/human reproduction",
+    "CSI node fencing (local-RWO operator override)"
+  ],
+  "scope": "Foundation conformance only; remaining application stories are not complete"
+}

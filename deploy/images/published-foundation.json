@@ -1,0 +1,30 @@
+{
+  "published_on": "2026-10-11",
+  "source_commit": "d12b8b20dbd3cb6c5876803ef37bc78702d0452f",
+  "tag": "harbor.mlinarik.com/mlinarik/foundry-v2:git-d12b8b2",
+  "immutable_reference": "harbor.mlinarik.com/mlinarik/foundry-v2@sha256:fd36f4df1fc97c3f21adc79d05d130ff1aed8d330ddaec8bc8596832ac6fe7f2",
+  "platform": "linux/amd64",
+  "container_validation": {
+    "passed_tests": 36,
+    "network": "none",
+    "read_only_root": true,
+    "capabilities": "ALL dropped",
+    "privilege_escalation": false
+  },
+  "kubernetes_deployment": {
+    "namespace": "foundry-v2-validation",
+    "job": "foundry-v2-foundation-d12b8b20dbd3",
+    "status": "Complete",
+    "completed_at": "2026-10-11T20:46:33Z",
+    "node": "k8s0n1",
+    "pod": "foundry-v2-foundation-d12b8b20dbd3-wp5vh",
+    "image_id": "harbor.mlinarik.com/mlinarik/foundry-v2@sha256:fd36f4df1fc97c3f21adc79d05d130ff1aed8d330ddaec8bc8596832ac6fe7f2",
+    "passed_tests": 36,
+    "exit_code": 0,
+    "network_policy": "deny-all ingress and egress",
+    "read_only_root": true,
+    "run_as_user": 10001,
+    "service_account_token_mounted": false,
+    "scope": "Foundation validation only; application services are not deployed"
+  }
+}

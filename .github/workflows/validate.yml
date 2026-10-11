@@ -1,0 +1,59 @@
+name: Foundry-v2 validation
+on:
+  push:
+    branches: ["codex/**", "main"]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      live_cluster:
+        type: boolean
+        default: false
+        description: Run tests against an explicitly authorized disposable cluster
+      live_model:
+        type: boolean
+        default: false
+        description: Run tests against the operator-selected private Ollama endpoint
+permissions:
+  contents: read
+jobs:
+  structural:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --require-hashes -r requirements.lock -r requirements-build.lock
+      - run: python -m pip install --no-build-isolation --no-deps -e .
+      - run: python -m pytest tests/unit tests/contract tests/integration -m 'not live_cluster and not live_model'
+      - run: python .specify/scripts/validate-foundry-tasks.py
+      - run: docker build -f deploy/images/Dockerfile -t foundry-v2:ci .
+      - run: docker run --rm --entrypoint python foundry-v2:ci -m foundry_v2.cli roles
+      - run: docker image inspect foundry-v2:ci --format '{{json .Id}}' > image-digest.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verified-image-digest
+          path: image-digest.json
+  live:
+    if: github.event_name == 'workflow_dispatch' && (inputs.live_cluster || inputs.live_model)
+    runs-on: [self-hosted, foundry-authorized]
+    environment: foundry-live-validation
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --require-hashes -r requirements.lock -r requirements-build.lock
+      - run: python -m pip install --no-build-isolation --no-deps -e .
+      - name: Explicitly selected live suites
+        env:
+          LIVE_CLUSTER: ${{ inputs.live_cluster }}
+          LIVE_MODEL: ${{ inputs.live_model }}
+        shell: bash
+        run: |
+          flags=()
+          selectors=()
+          if [[ "$LIVE_CLUSTER" == true ]]; then flags+=(--live-cluster); selectors+=(live_cluster); fi
+          if [[ "$LIVE_MODEL" == true ]]; then flags+=(--live-model); selectors+=(live_model); fi
+          selector=$(IFS=' '; echo "${selectors[*]}" | sed 's/ / or /g')
+          python -m pytest tests "${flags[@]}" -m "$selector"

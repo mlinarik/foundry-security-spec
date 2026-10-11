@@ -1,0 +1,20 @@
+{
+  "namespace": "foundry-v2",
+  "storage_class": "local-storage",
+  "storage_mode": "local-rwo",
+  "transport": "http",
+  "orchestrator_service_type": "LoadBalancer",
+  "local_node": "k8s0n1",
+  "local_path": "/data/foundry-v2",
+  "storage_size": "10Gi",
+  "operator_subjects": ["system:serviceaccount:foundry-v2:operator"],
+  "operator_groups": [],
+  "kubernetes_api_url": "https://kubernetes.default.svc:443",
+  "tokenreview_audience": "foundry-v2",
+  "tls_secret": null,
+  "infrastructure_secret": "foundry-infrastructure",
+  "registry_secret": "harbor-pull-secret",
+  "stale_seconds": 60,
+  "release_limit": 3,
+  "reaper_seconds": 5
+}

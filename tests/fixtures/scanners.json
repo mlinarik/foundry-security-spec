@@ -1,0 +1,6 @@
+{
+  "osv": {"results": [{"source": {"path": "fixture/go.sum"}, "packages": []}]},
+  "gitleaks": [{"RuleID": "fixture-rule", "File": "fixture.py", "StartLine": 2,
+                 "Secret": "REDACTED_FIXTURE_VALUE", "Fingerprint": "fixture:2:fixture-rule"}],
+  "notice": "Synthetic scanner payloads, no real credentials"
+}

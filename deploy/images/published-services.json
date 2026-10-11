@@ -1,0 +1,20 @@
+{
+  "published_on": "2026-10-11",
+  "source_commit": "28cc6a0ce03929bc6e7f14fbf3d1c2cd4fd9dab9",
+  "tag": "harbor.mlinarik.com/mlinarik/foundry-v2:git-28cc6a0",
+  "immutable_reference": "harbor.mlinarik.com/mlinarik/foundry-v2@sha256:340ec21c6321c6962d9987ec586d8f02d5405dc5628e5122b63ac84a59dbbc61",
+  "platform": "linux/amd64",
+  "restricted_container_tests": 53,
+  "services": [
+    "orchestrator",
+    "substrate"
+  ],
+  "namespace": "foundry-v2",
+  "deployment_evidence": "deploy/services/live-results.json",
+  "deployment_overrides": {
+    "storage": "Operator selected existing cluster-local storage; dedicated node-local RWO PV, Retain, Recreate and lifetime owner lock; no CSI RWOP claim",
+    "transport": "Operator selected private HTTP with bearer authentication; no TLS certificate"
+  },
+  "evaluation_start": "disabled until remaining worker/runtime safeguards pass",
+  "kubernetes_validation_tests": 53
+}

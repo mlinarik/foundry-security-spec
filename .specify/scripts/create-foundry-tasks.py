@@ -6,6 +6,11 @@ from collections import Counter
 
 ROOT = Path(__file__).resolve().parents[2]
 FEATURE = ROOT / 'specs/001-foundry'
+prior_completed = set()
+if (FEATURE/'tasks.md').exists():
+    for line in (FEATURE/'tasks.md').read_text(encoding='utf-8').splitlines():
+        if re.match(r'^- \[[xX]\] T\d{3}', line):
+            prior_completed.add(re.sub(r'^- \[[xX]\]', '- [ ]', line))
 rows = []
 
 def add(group, kind, text, refs='', parallel=False):
@@ -261,6 +266,9 @@ One role is not an additional process identity: Orchestrator has isolated determ
 
 '''
 parts = [header]
+if prior_completed:
+    parts[0] = parts[0].replace('generated backlog; no implementation or live checks executed.',
+                              'implementation in progress; completed tasks are checked; live acceptance pending.')
 for phase, group in enumerate(groups, 1):
     if isinstance(group,int):
         title,priority,criteria = stories[group]
@@ -275,7 +283,10 @@ for phase, group in enumerate(groups, 1):
             current_kind = row['kind']
             parts.append(f'### {current_kind.capitalize()} tasks\n')
         labels = (' [P]' if row['parallel'] else '') + (f' [US{group}]' if isinstance(group,int) else '')
-        parts.append(f"- [ ] {row['id']}{labels} {row['text']}. ({row['refs'].replace(',', ', ')})")
+        task_line = f"- [ ] {row['id']}{labels} {row['text']}. ({row['refs'].replace(',', ', ')})"
+        if task_line in prior_completed:
+            task_line = task_line.replace('- [ ]', '- [X]', 1)
+        parts.append(task_line)
     parts.append('\n**Checkpoint**: All phase verification tasks pass against stated fixtures; record live prerequisites/unexecuted evidence explicitly.\n')
 
 parts += ['''## Dependencies and execution order

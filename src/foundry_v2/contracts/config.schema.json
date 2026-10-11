@@ -1,0 +1,587 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "repository": {
+            "type": "string",
+            "minLength": 1
+          },
+          "revision": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "include": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "exclude": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "repository",
+          "revision",
+          "include",
+          "exclude"
+        ]
+      }
+    },
+    "goals": {
+      "type": "string"
+    },
+    "testbed": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "endpoints": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "scope": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "credential_ref": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "scope",
+                  "credential_ref"
+                ]
+              }
+            },
+            "reset": {
+              "type": "string",
+              "minLength": 1
+            },
+            "operator_contact": {
+              "type": "string",
+              "minLength": 1
+            },
+            "prohibited_actions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "endpoints",
+            "reset",
+            "operator_contact",
+            "prohibited_actions"
+          ]
+        }
+      ]
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hard_rules": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "hard_rules"
+      ]
+    },
+    "detection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "corpus_repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "corpus_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "osv_database_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "techniques": {
+          "const": [
+            "rule",
+            "dependency",
+            "secret",
+            "exploratory"
+          ]
+        }
+      },
+      "required": [
+        "corpus_repository",
+        "corpus_revision",
+        "osv_database_ref",
+        "techniques"
+      ]
+    },
+    "fleet": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "indexer": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "cartographer": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "detector": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "triager": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "validator": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "reporter": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "coverage-guide": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "indexer",
+            "cartographer",
+            "detector",
+            "triager",
+            "validator",
+            "reporter",
+            "coverage-guide"
+          ]
+        },
+        "soft_session_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "hard_session_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "validator_attempts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "heartbeat_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "stale_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "monitor_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "drain_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "block_after_releases": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "backoff_initial_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "backoff_max_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "notes_max_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "message_dedup_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "counts",
+        "soft_session_seconds",
+        "hard_session_seconds",
+        "validator_attempts",
+        "heartbeat_seconds",
+        "stale_seconds",
+        "monitor_seconds",
+        "drain_seconds",
+        "block_after_releases",
+        "backoff_initial_seconds",
+        "backoff_max_seconds",
+        "notes_max_bytes",
+        "message_dedup_seconds"
+      ]
+    },
+    "sandbox": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "namespace": {
+          "type": "string",
+          "minLength": 1
+        },
+        "storage_class": {
+          "type": "string",
+          "minLength": 1
+        },
+        "external_allowlist": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "cidr": {
+                "type": "string",
+                "minLength": 1
+              },
+              "ports": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "port": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 65535
+                    },
+                    "protocol": {
+                      "type": "string",
+                      "enum": [
+                        "TCP",
+                        "UDP"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "port",
+                    "protocol"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "cidr",
+              "ports"
+            ]
+          }
+        },
+        "read_only_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "writable_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "namespace",
+        "storage_class",
+        "external_allowlist",
+        "read_only_paths",
+        "writable_paths"
+      ]
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "spend_cap": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "runtime_cap_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "minLength": 1
+        },
+        "input_per_million": {
+          "type": "number",
+          "minimum": 0
+        },
+        "output_per_million": {
+          "type": "number",
+          "minimum": 0
+        },
+        "yield_enabled": {
+          "type": "boolean"
+        },
+        "yield_window_spend": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "yield_min_runtime_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "yield_threshold": {
+          "type": "number",
+          "minimum": 0
+        },
+        "severity_weights": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "none": {
+              "type": "number",
+              "minimum": 0
+            },
+            "low": {
+              "type": "number",
+              "minimum": 0
+            },
+            "medium": {
+              "type": "number",
+              "minimum": 0
+            },
+            "high": {
+              "type": "number",
+              "minimum": 0
+            },
+            "critical": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "exploited_multiplier": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "spend_cap",
+        "runtime_cap_seconds",
+        "currency",
+        "input_per_million",
+        "output_per_million",
+        "yield_enabled",
+        "yield_window_spend",
+        "yield_min_runtime_seconds",
+        "yield_threshold",
+        "severity_weights",
+        "exploited_multiplier"
+      ]
+    },
+    "integrations": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ollama": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "base_url": {
+              "type": "string",
+              "pattern": "^http://"
+            },
+            "model": {
+              "const": "qwen3-coder:30b"
+            }
+          },
+          "required": [
+            "base_url",
+            "model"
+          ]
+        },
+        "github": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "source_token_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "report_repository": {
+              "type": "string",
+              "minLength": 1
+            },
+            "api_version": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "source_token_ref",
+            "report_repository",
+            "api_version"
+          ]
+        },
+        "operator_auth": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "allowed_subjects": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "allowed_groups": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "ingress_host": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tls_secret_ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "allowed_subjects",
+            "allowed_groups",
+            "ingress_host",
+            "tls_secret_ref"
+          ]
+        }
+      },
+      "required": [
+        "ollama",
+        "github",
+        "operator_auth"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "name",
+    "target",
+    "goals",
+    "testbed",
+    "rules",
+    "detection",
+    "fleet",
+    "sandbox",
+    "budget",
+    "integrations"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://foundry.example.invalid/contracts/config.schema.json",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "budget": {
+            "properties": {
+              "yield_enabled": {
+                "const": true
+              }
+            },
+            "required": [
+              "yield_enabled"
+            ]
+          }
+        },
+        "required": [
+          "budget"
+        ]
+      },
+      "then": {
+        "properties": {
+          "budget": {
+            "properties": {
+              "input_per_million": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "output_per_million": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

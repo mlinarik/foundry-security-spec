@@ -12,7 +12,7 @@ ids = [t['id'] for t in tasks]
 assert ids == [f'T{i:03}' for i in range(1,len(tasks)+1)]
 lines = [line for line in text.splitlines() if line.startswith('- [')]
 assert len(lines) == len(tasks)
-pattern = r'^- \[ \] (T\d{3})(?: \[P\])?(?: \[US(\d+)\])? .+'
+pattern = r'^- \[[ xX]\] (T\d{3})(?: \[P\])?(?: \[US(\d+)\])? .+'
 for line, task in zip(lines,tasks):
     match = re.fullmatch(pattern,line)
     assert match and match[1]==task['id'], line
@@ -50,4 +50,4 @@ assert not re.search(r'NEEDS CLARIFICATION|TXXX|\[FEATURE NAME\]',text)
 assert 'hooks:\n' in (root/'.specify/extensions.yml').read_text(encoding='utf-8').replace('\r\n','\n')
 print(json.dumps({'tasks':len(tasks),'format':'all valid','stories':14,'requirements':len(required),
                   'api_operations':len(operations),'parallel_tasks':sum(t['parallel'] for t in tasks),
-                  'dependency_order':'valid','references':'valid','application_tests':'not run'},indent=2))
+                  'dependency_order':'valid','references':'valid','scope':'backlog validation only'},indent=2))

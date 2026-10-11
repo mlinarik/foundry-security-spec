@@ -1,0 +1,13 @@
+{
+  "schema_version": "0.1.0",
+  "fixtures": {
+    "python/seeded.py": "Python shell injection, read/parse only",
+    "python/clean.py": "Clean Python comparison",
+    "go/seeded.go": "Go shell injection, read/parse only",
+    "go/clean.go": "Clean Go comparison",
+    "adversarial.txt": "Prompt-injection boundary text",
+    "provider.json": "Native Ollama terminal accounting frame",
+    "github.json": "GitHub issue with opaque publication marker",
+    "scanners.json": "Synthetic offline OSV/Gitleaks payloads"
+  }
+}
