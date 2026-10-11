@@ -59,8 +59,17 @@ def test_ollama_native_client_is_configurable_without_network():
     assert callable(client.chat)
 
 
-def test_unimplemented_control_entrypoints_fail_closed():
-    for service in ("orchestrator", "substrate", "workers"):
+def test_service_entrypoints_require_explicit_deployment_configuration():
+    import os
+    environment={key:value for key,value in os.environ.items() if not key.startswith('FOUNDRY_')}
+    for service in ("orchestrator", "substrate"):
+        result = subprocess.run([sys.executable, "-m", f"foundry_v2.{service}"], capture_output=True, text=True, env=environment)
+        assert result.returncode != 0
+        assert 'FOUNDRY_SERVICE_CONFIG' in result.stderr
+
+
+def test_unimplemented_worker_entrypoint_fails_closed():
+    for service in ("workers",):
         result = subprocess.run([sys.executable, "-m", f"foundry_v2.{service}"], capture_output=True, text=True)
         assert result.returncode != 0
         assert "not implemented" in result.stderr

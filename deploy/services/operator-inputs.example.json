@@ -1,0 +1,19 @@
+{
+  "namespace": "foundry-v2",
+  "storage_class": "REPLACE_WITH_CSI_BLOCK_STORAGE_CLASS",
+  "storage_mode": "csi-rwop",
+  "transport": "https",
+  "local_node": null,
+  "local_path": null,
+  "storage_size": "10Gi",
+  "operator_subjects": [],
+  "operator_groups": [],
+  "kubernetes_api_url": "https://kubernetes.default.svc:443",
+  "tokenreview_audience": "foundry-v2",
+  "tls_secret": "foundry-service-tls",
+  "infrastructure_secret": "foundry-infrastructure",
+  "registry_secret": "harbor-pull-secret",
+  "stale_seconds": 60,
+  "release_limit": 3,
+  "reaper_seconds": 5
+}
