@@ -17,8 +17,8 @@ Initialize package, locked runtime and deterministic fixtures.
 ### Implementation tasks
 
 - [X] T001 Create CPython 3.12 package, three process entrypoints, CLI/config modules and planned directory layout in pyproject.toml and src/foundry_v2/__init__.py; keep eight role identities distinct. (NFR-003)
-- [ ] T002 Resolve plan.md pins on Linux Python 3.12 into requirements.lock with hashes, install and smoke-test FastAPI/LangGraph/Ollama/tree-sitter/CVSS; record any necessary compatibility correction in specs/001-foundry/dependency-resolution.json before using it. (NFR-003)
-- [ ] T003 Build pinned Linux service/worker images and verify scanner archive checksums for OSV-Scanner 2.6.0 and Gitleaks 8.30.1 in deploy/images/Dockerfile and deploy/images/scanners.json; resolve immutable image digests. (NFR-003)
+- [X] T002 Resolve plan.md pins on Linux Python 3.12 into requirements.lock with hashes, install and smoke-test FastAPI/LangGraph/Ollama/tree-sitter/CVSS; record any necessary compatibility correction in specs/001-foundry/dependency-resolution.json before using it. (NFR-003)
+- [X] T003 Build pinned Linux service/worker images and verify scanner archive checksums for OSV-Scanner 2.6.0 and Gitleaks 8.30.1 in deploy/images/Dockerfile and deploy/images/scanners.json; resolve immutable image digests. (NFR-003)
 - [X] T004 Create pytest markers and seeded Python/Go, clean, adversarial, scanner and provider/GitHub fixture inventory in tests/conftest.py and tests/fixtures/manifest.json; distinguish live_cluster/live_model tests. (NFR-003)
 - [X] T005 Configure deterministic unit/contract/integration CI and explicit opt-in live suites in .github/workflows/validate.yml; never embed credentials or claim skipped checks passed. (NFR-003)
 
@@ -34,11 +34,11 @@ Blocking shared persistence, identity, liveness and contracts. All stories requi
 - [ ] T007 [P] Write checkpoint pending-write/resume/namespace/unsafe-codec and blob fault tests in tests/contract/test_checkpoint_contract.py against a test-only reference saver. (FR-117, NFR-001, NFR-002)
 ### Implementation tasks
 
-- [ ] T008 Define shared strict DTOs, stable IDs and contract errors from contracts/openapi.json in src/foundry_v2/contracts/models.py; preserve all 41 operation IDs and role identities. (NFR-003)
-- [ ] T009 Create all data-model.md tables, foreign keys, unique constraints, history, migration versioning and backup-before-migration in src/foundry_v2/substrate/migrations/001_initial.sql and src/foundry_v2/substrate/migrate.py. (FR-087, FR-088, FR-117, FR-138)
-- [ ] T010 Implement lifetime owner lock, owner epochs, WAL/FULL/foreign keys, serialized short immediate transactions, uncertain-owner refusal and atomic active-evaluation reservation in src/foundry_v2/substrate/owner.py. (FR-117, FR-138)
-- [ ] T011 Implement actor-scoped idempotency receipt plus mutation transactions, CAS conflicts, cursor lists and safe error responses in src/foundry_v2/substrate/transactions.py. (FR-117, NFR-002, NFR-007)
-- [ ] T012 Implement immutable SHA-256 staging/fsync/rename, committed visibility, safe orphan handling and backup/restore manifest verification in src/foundry_v2/substrate/blobs.py and src/foundry_v2/substrate/backup.py. (FR-117, NFR-001, NFR-007)
+- [X] T008 Define shared strict DTOs, stable IDs and contract errors from contracts/openapi.json in src/foundry_v2/contracts/models.py; preserve all 41 operation IDs and role identities. (NFR-003)
+- [X] T009 Create all data-model.md tables, foreign keys, unique constraints, history, migration versioning and backup-before-migration in src/foundry_v2/substrate/migrations/001_initial.sql and src/foundry_v2/substrate/migrate.py. (FR-087, FR-088, FR-117, FR-138)
+- [X] T010 Implement lifetime owner lock, owner epochs, WAL/FULL/foreign keys, serialized short immediate transactions, uncertain-owner refusal and atomic active-evaluation reservation in src/foundry_v2/substrate/owner.py. (FR-117, FR-138)
+- [X] T011 Implement actor-scoped idempotency receipt plus mutation transactions, CAS conflicts, cursor lists and safe error responses in src/foundry_v2/substrate/transactions.py. (FR-117, NFR-002, NFR-007)
+- [X] T012 Implement immutable SHA-256 staging/fsync/rename, committed visibility, safe orphan handling and backup/restore manifest verification in src/foundry_v2/substrate/blobs.py and src/foundry_v2/substrate/backup.py. (FR-117, NFR-001, NFR-007)
 - [ ] T013 Implement TokenReview operator allowlist and hashed expiring role/evaluation/session substrate tokens, revocation and separate infrastructure registration authority in src/foundry_v2/api/auth.py and src/foundry_v2/substrate/auth.py. (FR-136, NFR-009)
 - [ ] T014 Implement substrate HTTP client and foundation endpoints for session registration, snapshot, blobs and generation reads in src/foundry_v2/substrate/app.py and src/foundry_v2/workers/client.py; fail closed during unknown ownership. (FR-117, FR-136, FR-138, NFR-004)
 - [ ] T015 Implement owner checkpoint tuple/pending-write endpoints and controlled typed codec in src/foundry_v2/substrate/checkpoints.py; restrict fresh reproducer access to its own thread. (FR-117, NFR-001)

@@ -266,6 +266,9 @@ One role is not an additional process identity: Orchestrator has isolated determ
 
 '''
 parts = [header]
+if prior_completed:
+    parts[0] = parts[0].replace('generated backlog; no implementation or live checks executed.',
+                              'implementation in progress; completed tasks are checked; live acceptance pending.')
 for phase, group in enumerate(groups, 1):
     if isinstance(group,int):
         title,priority,criteria = stories[group]
