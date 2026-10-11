@@ -12,12 +12,15 @@ from typing import Literal
 
 from foundry_v2.api.auth import Forbidden, Principal, bearer
 from foundry_v2.api.common import configure, idempotency
-from foundry_v2.contracts.models import Checkpoint, CheckpointWrites, Claim, ClaimRequest, ClaimWrite, Conflict, DomainError, GenerationWrite, Heartbeat, Page, Receipt, SessionRegistration, TaskCreate, TaskUpdate, Unavailable, new_id
+from foundry_v2.contracts.models import Checkpoint, CheckpointWrites, Claim, ClaimRequest, ClaimWrite, ConfigUpdate, Conflict, Control, DomainError, GenerationWrite, Heartbeat, IndexQuery, Page, Receipt, SessionRegistration, StartEvaluation, TaskCreate, TaskUpdate, Unavailable, new_id
 from foundry_v2.substrate.audit import event,transcript
 from foundry_v2.substrate.auth import SessionAuth
 from foundry_v2.substrate.claims import WorkQueues
 from foundry_v2.substrate.checkpoints import Checkpoints
 from foundry_v2.substrate.generations import Generations
+from foundry_v2.substrate.evaluations import Evaluations
+from foundry_v2.substrate.lifecycle import LifecycleRecords
+from foundry_v2.indexing.service import IndexQueries
 from foundry_v2.checkpoints.http_saver import decode_namespace
 from foundry_v2.substrate.snapshots import require_evaluation, snapshot, sequence
 from foundry_v2.substrate.transactions import mutate
@@ -37,7 +40,7 @@ class TranscriptAppend(BaseModel):
     content: dict
 
 
-def create_app(owner, operator_auth, infrastructure_token, stale_seconds=60, release_limit=3, reaper_seconds=5, require_tls=True):
+def create_app(owner, operator_auth, infrastructure_token, stale_seconds=60, release_limit=3, reaper_seconds=5, require_tls=True,local_storage=False):
     if len(infrastructure_token) < 32:
         raise ValueError('Strong dedicated infrastructure token required')
     sessions = SessionAuth(owner)
@@ -45,6 +48,9 @@ def create_app(owner, operator_auth, infrastructure_token, stale_seconds=60, rel
     checkpoints=Checkpoints(owner,queues)
     blobs=checkpoints.blobs
     generation_store=Generations(owner,blobs,queues)
+    index_queries=IndexQueries(owner,blobs,queues)
+    evaluations=Evaluations(owner,private_http=not require_tls,local_storage=local_storage)
+    lifecycle=LifecycleRecords(owner)
     if not 0 < reaper_seconds < stale_seconds:
         raise ValueError('Reaper interval must be positive and below stale threshold')
 
@@ -108,6 +114,34 @@ def create_app(owner, operator_auth, infrastructure_token, stale_seconds=60, rel
         with owner.transaction() as db:
             return dict(db.execute('SELECT installation_id,active_evaluation_id,owner_epoch,version FROM installations').fetchone())
 
+    @app.post('/substrate/v1/evaluations',response_model=Receipt,status_code=202)
+    def start_evaluation(payload: StartEvaluation,request: Request):
+        return evaluations.start(actor(request),payload.model_dump(),idempotency(request))
+
+    @app.get('/substrate/v1/evaluations/{evaluation_id}')
+    def evaluation_metadata(evaluation_id: str,request: Request):
+        principal=actor(request,evaluation_id)
+        if principal.kind=='worker': raise Forbidden('control_identity_required')
+        with owner.transaction() as db:
+            row=require_evaluation(db,evaluation_id)
+            return {'evaluation_id':evaluation_id,'state':row['state'],'version':row['version'],'config_revision':row['config_revision'],'goals_revision':row['goals_revision']}
+
+    @app.post('/substrate/v1/evaluations/{evaluation_id}/control',response_model=Receipt)
+    def control_evaluation(evaluation_id: str,payload: Control,request: Request):
+        return evaluations.control(actor(request,evaluation_id),evaluation_id,payload.model_dump(),idempotency(request))
+
+    @app.put('/substrate/v1/evaluations/{evaluation_id}/configuration',response_model=Receipt)
+    def update_configuration(evaluation_id: str,payload: ConfigUpdate,request: Request):
+        return evaluations.update(actor(request,evaluation_id),evaluation_id,payload.model_dump(),idempotency(request))
+
+    @app.get('/substrate/v1/evaluations/{evaluation_id}/lifecycle')
+    def lifecycle_snapshot(evaluation_id: str,request: Request):
+        return lifecycle.snapshot(infrastructure(request),evaluation_id)
+
+    @app.post('/substrate/v1/evaluations/{evaluation_id}/lifecycle/{command}')
+    def lifecycle_command(evaluation_id: str,command: str,payload: dict,request: Request):
+        return lifecycle.command(infrastructure(request),evaluation_id,command,payload,idempotency(request))
+
     @app.get('/substrate/v1/evaluations/{evaluation_id}/snapshot', operation_id='readSubstrateSnapshot')
     def read_snapshot(evaluation_id: str, request: Request):
         principal = actor(request, evaluation_id)
@@ -117,22 +151,26 @@ def create_app(owner, operator_auth, infrastructure_token, stale_seconds=60, rel
         return snapshot(owner, evaluation_id)
 
     @app.post('/substrate/v1/evaluations/{evaluation_id}/sessions', response_model=Receipt, operation_id='registerSession')
-    def register(evaluation_id: str, payload: SessionRegistration, request: Request):
+    def register(evaluation_id: str, payload: SessionRegistration, request: Request,purpose: Literal['role','validation-author','validation-reproduce']='role'):
         principal = infrastructure(request)
         def effect(db):
             require_evaluation(db, evaluation_id)
             existing = db.execute('SELECT * FROM sessions WHERE session_id=?', (payload.session_id,)).fetchone()
             if existing:
                 raise Conflict('session_identity_conflict')
+            if purpose!='role' and payload.role!='validator': raise Forbidden('invalid_session_purpose')
             db.execute('INSERT INTO sessions(session_id,evaluation_id,role,slot,incarnation,pod_name,state,heartbeat_at) VALUES(?,?,?,?,?,?,?,?)',
                        (payload.session_id,evaluation_id,payload.role,payload.slot,payload.incarnation,payload.pod_name,'registered',time.time()))
+            db.execute('INSERT INTO runtime_records VALUES(?,?,?,?,0)',(evaluation_id,'session-purpose',payload.session_id,__import__('json').dumps({'purpose':purpose})))
             event(db, principal, evaluation_id, 'session.register', payload.session_id, version=0)
             return {'request_id': request.state.request_id, 'resource_id': payload.session_id, 'version': 0, 'state': 'registered'}
-        return mutate(owner, principal.subject, 'POST', request.url.path, idempotency(request), payload.model_dump(), effect)
+        return mutate(owner, principal.subject, 'POST', request.url.path, idempotency(request), dict(payload.model_dump(),purpose=purpose), effect)
 
     @app.post('/substrate/v1/evaluations/{evaluation_id}/credentials', response_model=Receipt)
     def provision(evaluation_id: str, payload: CredentialProvision, request: Request):
         principal=infrastructure(request)
+        if hmac.compare_digest(payload.token.encode(),infrastructure_token.encode()):
+            raise Forbidden('infrastructure_token_cannot_be_worker_credential')
         safe_payload=payload.model_dump(exclude={'token'})
         safe_payload['token_hash']=hashlib.sha256(payload.token.encode()).hexdigest()
         def effect(db):
@@ -160,7 +198,7 @@ def create_app(owner, operator_auth, infrastructure_token, stale_seconds=60, rel
     @app.get('/substrate/v1/evaluations/{evaluation_id}/generations', operation_id='readGenerations')
     def generations(evaluation_id: str, request: Request):
         principal = actor(request, evaluation_id)
-        if principal.kind == 'worker' and principal.role == 'validator':
+        if principal.kind == 'worker' and principal.purpose == 'validation-reproduce':
             raise Forbidden('reproduction_access_denied')
         with owner.transaction() as db:
             require_evaluation(db, evaluation_id)
@@ -170,6 +208,10 @@ def create_app(owner, operator_auth, infrastructure_token, stale_seconds=60, rel
     @app.post('/substrate/v1/evaluations/{evaluation_id}/generations',response_model=Receipt,operation_id='commitGeneration')
     def commit_generation(evaluation_id: str,payload: GenerationWrite,request: Request):
         return generation_store.commit(actor(request,evaluation_id),evaluation_id,payload.model_dump(),idempotency(request))
+
+    @app.post('/substrate/v1/evaluations/{evaluation_id}/index/query',response_model=Page,operation_id='queryIndex')
+    def query_index(evaluation_id: str,payload: IndexQuery,request: Request):
+        return index_queries.query(actor(request,evaluation_id),evaluation_id,payload.model_dump())
 
     @app.post('/substrate/v1/evaluations/{evaluation_id}/transcripts',response_model=Receipt)
     def append_transcript(evaluation_id: str,payload: TranscriptAppend,request: Request):
@@ -266,7 +308,7 @@ def create_app(owner, operator_auth, infrastructure_token, stale_seconds=60, rel
             if not rows: raise Forbidden('artifact_scope_mismatch')
             if principal.kind=='worker':
                 queues.session(db,principal)
-                if not any(r['grantee']==principal.session_id or (r['grantee']=='*' and r['purpose']=='artifact' and principal.role!='validator') for r in rows):
+                if not any(r['grantee']==principal.session_id or (r['grantee']=='*' and r['purpose']=='artifact' and principal.purpose!='validation-reproduce') for r in rows):
                     raise Forbidden('artifact_scope_mismatch')
             try:
                 data=blobs.read_in_transaction(db,digest)

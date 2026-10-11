@@ -1,6 +1,7 @@
 """Hashed session credentials; a worker can never authenticate as an operator."""
 import hashlib
 import math
+import json
 import time
 
 from foundry_v2.api.auth import Forbidden, Principal, Unauthorized
@@ -43,7 +44,8 @@ class SessionAuth:
                 raise Unauthorized('invalid_session_credential')
             if row['evaluation_id'] != evaluation:
                 raise Forbidden('evaluation_scope_mismatch')
-            return Principal(row['credential_id'], 'worker', evaluation, row['session_id'], row['role'])
+            purpose=db.execute('SELECT payload FROM runtime_records WHERE evaluation_id=? AND kind=\'session-purpose\' AND resource_id=?',(evaluation,row['session_id'])).fetchone()
+            return Principal(row['credential_id'], 'worker', evaluation, row['session_id'], row['role'],json.loads(purpose[0])['purpose'] if purpose else 'role')
 
     def has_token(self, token):
         with self.owner.transaction() as db:

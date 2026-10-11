@@ -274,5 +274,14 @@
       "version": "0.25.0",
       "sha256": "5a56ba0db2d244117ed744dfa8f6f5b366e14148e00de44723413b2f3938a902"
     }
+  ],
+  "runtime_compatibility_notes": [
+    {
+      "date": "2026-10-11",
+      "package": "tree-sitter 0.26.0",
+      "observation": "Native point-coordinate access reproducibly corrupts traversal with hundreds of Python definitions on Windows",
+      "resolution": "Compute source line ranges by bisecting newline byte offsets; do not access native Node.start_point/end_point",
+      "regression": "15,000-definition inventory completes; scoped Python/Go, method/import/nested-call and CPU isolation fixtures pass"
+    }
   ]
 }

@@ -59,7 +59,7 @@ class WorkQueues(Liveness):
         if kind != 'task':
             return self.claim_resource(actor,kind,queue,key)
         def effect(db):
-            self.session(db,actor)
+            if self.session(db,actor)['state']=='draining': raise Conflict('session_draining')
             existing=db.execute('SELECT * FROM claims WHERE evaluation_id=? AND resource_type=? AND holder_session_id=?',(actor.evaluation_id,kind,actor.session_id)).fetchone()
             if existing:
                 raise Conflict('session_already_holds_claim')
@@ -126,7 +126,7 @@ class WorkQueues(Liveness):
     def claim_resource(self,actor,kind,queue,key):
         if kind not in ('finding','file'): raise DomainError('invalid_resource_type')
         def effect(db):
-            self.session(db,actor)
+            if self.session(db,actor)['state']=='draining': raise Conflict('session_draining')
             row=db.execute('SELECT r.* FROM runtime_records r LEFT JOIN claims c ON c.resource_type=? AND c.resource_id=r.resource_id WHERE r.evaluation_id=? AND r.kind=? AND json_extract(r.payload,\'$.state\')=\'open\' AND json_extract(r.payload,\'$.queue\')=? AND c.holder_session_id IS NULL ORDER BY json_extract(r.payload,\'$.priority\'),r.resource_id LIMIT 1',
                            (kind,actor.evaluation_id,f'queue:{kind}:{actor.role}',queue)).fetchone()
             if row is None: raise Conflict('no_eligible_work')

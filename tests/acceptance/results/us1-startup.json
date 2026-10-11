@@ -1,0 +1,21 @@
+{
+  "phase": "US-1 structural acceptance",
+  "linux_restricted_tests": 81,
+  "checks": [
+    "schema/semantic missing-field errors",
+    "race-safe single evaluation",
+    "cap exhaustion resume refusal",
+    "system/tool/token capability fixture",
+    "Indexer-first gate and adoption",
+    "unlimited-attempt capped-backoff fixture",
+    "controlled configuration restart invalidates index",
+    "commit-pinned GitHub source and blob integrity",
+    "Python/Go methods, aliases and nested/import resolution",
+    "six scoped committed-index queries",
+    "atomic generation rollback and unchanged replay reuse",
+    "separate CPU parser process while status responds",
+    "large-inventory native-coordinate workaround"
+  ],
+  "live_bindings": "unexecuted until budget, sandbox, detection/reporting and operator deployment inputs are ready",
+  "production_worker_fleet": "not enabled"
+}

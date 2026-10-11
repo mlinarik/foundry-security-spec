@@ -22,6 +22,7 @@ class Principal:
     evaluation_id: str | None = None
     session_id: str | None = None
     role: str | None = None
+    purpose: str = 'role'
 
 
 class TokenReviewer:

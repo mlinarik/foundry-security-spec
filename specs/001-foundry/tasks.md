@@ -62,20 +62,20 @@ Blocking shared persistence, identity, liveness and contracts. All stories requi
 
 ### Test tasks
 
-- [ ] T023 [P] [US1] Write startup-order, invalid/missing config, cap guard, model capability, race and crash-loop acceptance tests in tests/acceptance/test_us1_start.py with fake adjacent roles. (FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-010, FR-011, FR-013, FR-134, FR-138, FR-145, FR-146, FR-148, FR-149)
-- [ ] T024 [P] [US1] Write scoped Python/Go inventory/static-call/query, parse-skip and atomic-generation fixtures in tests/unit/test_indexing.py including a CPU-bound parse while status responds. (FR-021, FR-022, FR-023, FR-024, FR-025, FR-026, FR-028, FR-029, FR-030)
+- [X] T023 [P] [US1] Write startup-order, invalid/missing config, cap guard, model capability, race and crash-loop acceptance tests in tests/acceptance/test_us1_start.py with fake adjacent roles. (FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-010, FR-011, FR-013, FR-134, FR-138, FR-145, FR-146, FR-148, FR-149)
+- [X] T024 [P] [US1] Write scoped Python/Go inventory/static-call/query, parse-skip and atomic-generation fixtures in tests/unit/test_indexing.py including a CPU-bound parse while status responds. (FR-021, FR-022, FR-023, FR-024, FR-025, FR-026, FR-028, FR-029, FR-030)
 ### Implementation tasks
 
-- [ ] T025 [US1] Implement YAML shape plus runtime semantic validation, all missing-field errors, versioned config and secret references in src/foundry_v2/config.py; reject placeholder revisions/unsafe endpoints and controlled-restart fields. (FR-001, FR-145, FR-146, FR-148, FR-149)
-- [ ] T026 [US1] Implement native Ollama tool/system/terminal-token capability probes, model digest and aggregated GitHub/testbed/storage/policy preflight in src/foundry_v2/integrations/preflight.py; binding invokes US6 policy probes when installed. (FR-011, FR-134)
-- [ ] T027 [US1] Implement scoped commit-pinned source acquisition and deterministic Python/Go parser inventories/static and resolvable indirect edges in src/foundry_v2/indexing/parser.py and src/foundry_v2/indexing/source.py; mark unresolved calls and visible skipped files. (FR-021, FR-022, FR-023, FR-028, FR-029)
-- [ ] T028 [US1] Implement function/body/caller/callee/symbol/text queries, staged complete generation publication and readiness assertions in src/foundry_v2/indexing/service.py and src/foundry_v2/roles/indexer.py; isolate parsing in its worker process. (FR-024, FR-025, FR-026, FR-030)
-- [ ] T029 [US1] Implement sole-authority persisted Job reconciliation/adoption, Indexer readiness gate, desired role counts, exponential unlimited-attempt crash retry and graceful drain in src/foundry_v2/orchestrator/lifecycle.py. (FR-002, FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-013)
-- [ ] T030 [US1] Implement atomic config revisions and fleet count reconciliation in src/foundry_v2/orchestrator/configuration.py; safely restart changed target/sandbox/integrations and wire rules/budget handlers supplied by later stories. (FR-010, FR-145, FR-147, FR-148)
-- [ ] T031 [US1] Implement authenticated start/control/config endpoints and CLI up/preflight/status/stop in src/foundry_v2/api/evaluations.py and src/foundry_v2/cli.py; provide one-command up alias and async preflight/index states. (FR-001, FR-007, FR-138, FR-149)
+- [X] T025 [US1] Implement YAML shape plus runtime semantic validation, all missing-field errors, versioned config and secret references in src/foundry_v2/config.py; reject placeholder revisions/unsafe endpoints and controlled-restart fields. (FR-001, FR-145, FR-146, FR-148, FR-149)
+- [X] T026 [US1] Implement native Ollama tool/system/terminal-token capability probes, model digest and aggregated GitHub/testbed/storage/policy preflight in src/foundry_v2/integrations/preflight.py; binding invokes US6 policy probes when installed. (FR-011, FR-134)
+- [X] T027 [US1] Implement scoped commit-pinned source acquisition and deterministic Python/Go parser inventories/static and resolvable indirect edges in src/foundry_v2/indexing/parser.py and src/foundry_v2/indexing/source.py; mark unresolved calls and visible skipped files. (FR-021, FR-022, FR-023, FR-028, FR-029)
+- [X] T028 [US1] Implement function/body/caller/callee/symbol/text queries, staged complete generation publication and readiness assertions in src/foundry_v2/indexing/service.py and src/foundry_v2/roles/indexer.py; isolate parsing in its worker process. (FR-024, FR-025, FR-026, FR-030)
+- [X] T029 [US1] Implement sole-authority persisted Job reconciliation/adoption, Indexer readiness gate, desired role counts, exponential unlimited-attempt crash retry and graceful drain in src/foundry_v2/orchestrator/lifecycle.py. (FR-002, FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-013)
+- [X] T030 [US1] Implement atomic config revisions and fleet count reconciliation in src/foundry_v2/orchestrator/configuration.py; safely restart changed target/sandbox/integrations and wire rules/budget handlers supplied by later stories. (FR-010, FR-145, FR-147, FR-148)
+- [X] T031 [US1] Implement authenticated start/control/config endpoints and CLI up/preflight/status/stop in src/foundry_v2/api/evaluations.py and src/foundry_v2/cli.py; provide one-command up alias and async preflight/index states. (FR-001, FR-007, FR-138, FR-149)
 ### Verification tasks
 
-- [ ] T032 [US1] Run US1 fixture startup and parser tests in tests/acceptance/test_us1_start.py; record real-binding startup as pending until US5/US6/US7/US10 and deployment inputs are ready. (FR-004, FR-025, FR-030, FR-134, FR-138)
+- [X] T032 [US1] Run US1 fixture startup and parser tests in tests/acceptance/test_us1_start.py; record real-binding startup as pending until US5/US6/US7/US10 and deployment inputs are ready. (FR-004, FR-025, FR-030, FR-134, FR-138)
 
 **Checkpoint**: All phase verification tasks pass against stated fixtures; record live prerequisites/unexecuted evidence explicitly.
 
